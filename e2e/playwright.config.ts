@@ -6,8 +6,8 @@ const windowSize = { width: 1900, height: 1080 };
 const config: PlaywrightTestConfig = {
   globalSetup: 'src/pw-helpers/before-hook.ts',
   // globalTeardown: '',
-  maxFailures: globalConfig.CI ? 10 : 1,
-  retries: globalConfig.retries,
+  maxFailures: globalConfig.CI ? 10 : 2,
+  retries: process.env.CI ? 1 : 0,
   timeout: 120000,
   workers: 1,
   // reporter: 'list',

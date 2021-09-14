@@ -39,7 +39,7 @@ test.describe('Transactions >', () => {
     const tx = await velasNative.waitForConfirmedTransaction(txSignature);
     assert.exists(tx);
 
-    await page.click('[datatesting="transaction"] div.more');
+    await page.click('[datatesting="transaction"] div.more', { timeout: 10000 });
     const receiverAddress = (await page.getAttribute('[datatesting="transaction"] .address-holder a[data-original]', 'data-original'))?.trim();
     assert.equal(receiverAddress, data.wallets.fundsReceiver.address);
 

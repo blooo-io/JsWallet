@@ -5,19 +5,19 @@ const environment: Environment = 'local';
 type Network = 'testnet' | 'mainnet';
 
 export const config = {
-  defaultWaitTimeout: Number(process.env.DEFAULT_WAIT_TIMEOUT) || 6000,
-  env: process.env.ENVIRONMENT as Environment || environment,
-  logLevel: process.env.LOG_LEVEL || 'warn',
   CI: process.env.CI === 'false',
-  retries: process.env.CI ? 1 : 0,
+  defaultWaitTimeout: Number(process.env.DEFAULT_WAIT_TIMEOUT) || 6000,
+  environment: process.env.ENVIRONMENT as Environment || environment,
+  logLevel: process.env.LOG_LEVEL || 'info',
+  network: process.env.NETWORK || 'testnet',
   pw: {
-    slowMo: 100,
+    slowMo: 200,
   },
 };
 
 export function getWalletURL(params?: { network?: Network, environment?: Environment }): string {
   // default environment used – "local"
-  const url = data.walletURLs[params?.environment || 'local'];
+  const url = data.walletURLs[params?.environment || config.environment];
   // default network used – "testnet"
-  return (!params?.network || params?.network === 'testnet') ? `${url}?network=testnet` : url;
+  return (!params?.network || params?.network === config.network) ? `${url}?network=testnet` : url;
 }

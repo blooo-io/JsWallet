@@ -28,7 +28,7 @@ test.describe('Auth >', () => {
       const seedWords = await auth.newSeed.getSeedWords({ log: true });
 
       await auth.newSeed.next();
-      await auth.wordByWordSeedInputForm.fill(seedWords);
+      await auth.wordByWordSeedInputForm.fill(seedWords, { fast: true });
       await auth.terms.accept();
 
       assert.isTrue(await page.isVisible('.menu-item'));

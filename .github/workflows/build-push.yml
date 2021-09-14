@@ -4,6 +4,56 @@ on:
     branches: [master]
 
 jobs:
+  e2e-tests-local:
+    runs-on: macos-internal2
+    defaults:
+      run:
+        working-directory: ./e2e
+    steps:
+      - name: checkout JsWallet
+        uses: actions/checkout@v2
+      - name: checkout web3t
+        uses: actions/checkout@v2
+        with:
+          repository: velas/web3t
+          path: .compiled-ssr/web3t
+          ref: master
+      - name: install web3t modules
+        working-directory: .compiled-ssr/web3t
+        run: npm i
+      - name: copy web3 side by side to wallet
+        working-directory: ../
+        run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ web3t/
+      - name: delete wallet build cache
+        working-directory: ./
+        run: rm -rf ./.compiled
+      # sleep required for wallet start
+      - name: run wallet
+        working-directory: ./
+        run: |
+          npm run wallet-start &
+          sleep 16 &&
+          echo '- - - - - Wallet started - - - - -'
+      - name: install modules required for testrun
+        run: npm ci
+      - name: clean previous test results
+        run: rm -rf ./test-results/
+      - name: blockchain health check
+        run: CI=true LOG_LEVEL=info npm run blockchain-health-check
+      - name: run tests-unstable
+        run: CI=true LOG_LEVEL=info npm run test-unstable
+      - name: run tests-stable
+        run: CI=true LOG_LEVEL=info npm run test-stable
+      - name: create html report from junit
+        if: always()
+        run: junit2html test-results/test-results.xml test-results/report.html
+      - name: upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: |
+            e2e/test-results/
   docker-build-push:
     # Name the Job
     name: Build and push
@@ -70,3 +120,34 @@ jobs:
           mkdir -p ~/.kube && echo $KUBE_CONFIG_DATA|base64 --decode > ~/.kube/config
           cd deploy
           helmfile -e default -l namespace=default,name=velas-wallet apply  --set image.tag=$IMAGE_TAG,image.repository=$ECR_REGISTRY/$ECR_REPOSITORY --skip-deps
+  e2e-tests:
+    runs-on: macos-internal2
+    needs: [docker-build-push, deploy]
+    defaults:
+      run:
+        working-directory: ./e2e
+    steps:
+      - uses: actions/checkout@v2
+      - name: install modules required for testrun
+        run: npm ci
+      - name: clean previous test results
+        run: rm -rf ./test-results/
+      - name: blockchain health check
+        run: CI=true LOG_LEVEL=info ENVIRONMENT=prod npm run blockchain-health-check
+      - name: run tests testnet
+        run: CI=true LOG_LEVEL=debug ENVIRONMENT=prod npm run test-testnet
+      - name: run tests-unstable
+        run: CI=true LOG_LEVEL=info ENVIRONMENT=prod npm run test-unstable
+      - name: run tests-stable
+        run: CI=true LOG_LEVEL=info ENVIRONMENT=prod npm run test-stable
+        # report creation will fail if tests fail
+      - name: create html report from junit
+        if: always()
+        run: junit2html test-results/test-results.xml test-results/report.html
+      - name: upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: |
+            e2e/test-results/
