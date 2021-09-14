@@ -4,9 +4,9 @@
   "description": "Tests for Velas Wallet",
   "main": "index.js",
   "scripts": {
-    "test-stable": "npx playwright test tests/stable",
-    "test-unstable": "npx playwright test tests/unstable",
-    "test-testnet": "npx playwright test tests/testnet",
+    "test-stable": "npx playwright test tests/stable/",
+    "test-unstable": "npx playwright test tests/unstable/",
+    "test-testnet": "npx playwright test tests/testnet/",
     "blockchain-health-check": "ts-node src/tests/blockchain-health-check.ts"
   },
   "repository": {

@@ -30,8 +30,8 @@ test.describe('Settings >', () => {
     await page.type('[type="password"]', '111222');
     await walletsScreen.confirmPrompt();
     await page.click('.tokens-drop span:text(" Velas Native")');
-    await walletsScreen.confirmPrompt();
-    await page.click('#notification-close');
+
+    await page.waitForSelector('" Copied to Clipboard!"');
 
     const copiedKey = await page.evaluate(async () => await navigator.clipboard.readText());
     log.info(copiedKey);

@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { VelasNative } from '@velas/velas-chain-test-wrapper';
+import { velasNative } from '@velas/velas-chain-test-wrapper';
 import { assert } from '../../assert';
 import { getWalletURL } from '../../config';
 import { setupPage } from '../../pw-helpers/setup-page';
@@ -8,7 +8,6 @@ import { Currency, WalletsScreen } from '../../screens/wallets';
 import { data } from '../../test-data';
 
 let auth: Auth;
-const velasNativeChain = new VelasNative();
 let walletsScreen: WalletsScreen;
 
 test.describe('Wallets screen >', () => {
@@ -109,7 +108,7 @@ test.describe('Wallets screen >', () => {
 
       for (let i = 0; i < wallets.length; i++) {
         const currency = wallets[i];
-        const VLXNativeBalanceOnBlockchain = (await velasNativeChain.getBalance(data.wallets.withFunds.address)).VLX;
+        const VLXNativeBalanceOnBlockchain = (await velasNative.getBalance(data.wallets.withFunds.address)).VLX;
         const balanceUpdateAmount = 0.001;
         const amountOfTokens = balances[currency];
 
@@ -117,17 +116,17 @@ test.describe('Wallets screen >', () => {
         if (amountOfTokens === null) continue;
 
         switch (wallets[i]) {
-          case 'Velas Legacy':
+          case 'Velas':
             assert.equal(amountOfTokens, '0.999958');
             break;
           case 'Velas Native':
             assert.equal(amountOfTokens, String(VLXNativeBalanceOnBlockchain));
-            const tx = await velasNativeChain.transfer({
+            const tx = await velasNative.transfer({
               payerSeed: data.wallets.payer.seed,
               toAddress: data.wallets.withFunds.address,
               lamports: balanceUpdateAmount * 10 ** 9,
             });
-            await velasNativeChain.waitForConfirmedTransaction(tx);
+            await velasNative.waitForConfirmedTransaction(tx);
             await walletsScreen.updateBalances();
             // const newAmountOfTokens = Number(await (await walletElement.$('.info .token.price'))?.getAttribute('title')).toFixed(6);
             const newAmountOfTokens = Number((await walletsScreen.getWalletsBalances())['Velas Native'])?.toFixed(6);

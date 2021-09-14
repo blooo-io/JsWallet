@@ -53,7 +53,6 @@ check-ptxs-in-background = (store, web3, network, token, [ptx, ...rest], cb)->
     return cb null if not ptx?
     err <- check-ptx-in-background store, web3, network, token, ptx
     #return cb err if err?
-    console.log \err, err
     <- set-timeout _, 1000
     if err
         rest.push ptx

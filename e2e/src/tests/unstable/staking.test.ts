@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { VelasNative } from '@velas/velas-chain-test-wrapper';
+import { velasNative } from '@velas/velas-chain-test-wrapper';
 import { assert } from '../../assert';
 import { getWalletURL } from '../../config';
 import { setupPage } from '../../pw-helpers/setup-page';
@@ -11,7 +11,6 @@ import { data } from '../../test-data';
 let auth: Auth;
 let walletsScreen: WalletsScreen;
 let stakingScreen: StakingScreen;
-const velasNative = new VelasNative();
 
 test.describe('Staking >', () => {
   test.beforeEach(async ({ page }) => {

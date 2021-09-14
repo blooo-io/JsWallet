@@ -15,8 +15,6 @@ jobs:
 
       - name: checkout JsWallet
         uses: actions/checkout@v2
-        with:
-          path: main
 
       - name: checkout web3t
         uses: actions/checkout@v2
@@ -32,20 +30,11 @@ jobs:
 
       - name: copy web3 side by side to wallet
         working-directory: ../
-        run: mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ web3t/
-
-
-      - name: install web3t modules
-        working-directory: ../web3t
-        run: npm i
+        run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ web3t/
 
       - name: delete wallet build cache
         working-directory: ./
         run: rm -rf ./.compiled
-
-      - name: TEST
-        working-directory: ./
-        run: pwd
 
       # sleep required for wallet start
       - name: run wallet
@@ -73,7 +62,7 @@ jobs:
       - name: run tests-stable
         run: CI=true LOG_LEVEL=info npm run test-stable
 
-        # report creation will fail if tests fail
+      # report creation will fail if testrun fails (if testrun is interrupted)
       - name: create html report from junit
         if: always()
         run: junit2html test-results/test-results.xml test-results/report.html

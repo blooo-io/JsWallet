@@ -8,10 +8,10 @@ export const config = {
   defaultWaitTimeout: Number(process.env.DEFAULT_WAIT_TIMEOUT) || 6000,
   env: process.env.ENVIRONMENT as Environment || environment,
   logLevel: process.env.LOG_LEVEL || 'warn',
-  CI: process.env.CI === 'true',
+  CI: process.env.CI === 'false',
   retries: process.env.CI ? 1 : 0,
   pw: {
-    slowMo: 200,
+    slowMo: 100,
   },
 };
 

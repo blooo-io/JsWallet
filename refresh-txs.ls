@@ -8,7 +8,6 @@ refresh-txs = (web3, store, cb)->
     store.current.transactions-are-loading = yes
     clear-timer = (cb)->
         delete cb.timer
-        console.log "cleanup timer"
         clear-timeout cb.timer
     reset-request = ->
         store.current.transactions-are-loading = no 

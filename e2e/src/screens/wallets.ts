@@ -2,7 +2,7 @@ import { log } from '../tools/logger';
 import { ElementHandle, Page } from '../types';
 import { BaseScreen } from './base';
 
-export type Currency = 'Bitcoin' | 'Velas Legacy' | 'Velas Native' | 'Velas EVM' | 'Litecoin' | 'Ethereum' | 'Ethereum Legacy';
+export type Currency = 'Bitcoin' | 'Velas' | 'Velas Native' | 'Velas EVM' | 'Litecoin' | 'Ethereum' | 'Ethereum Legacy';
 export type Balances = Record<Currency, string | null>;
 
 export class WalletsScreen extends BaseScreen {
@@ -36,7 +36,7 @@ export class WalletsScreen extends BaseScreen {
     await this.waitForWalletsDataLoaded();
     const walletElements = await this.page.$$('.wallet-item');
     const balances: Balances = {
-      'Velas Legacy': null,
+      'Velas': null,
       'Velas EVM': null,
       'Velas Native': null,
       Bitcoin: null,

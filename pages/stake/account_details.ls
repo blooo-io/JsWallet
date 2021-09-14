@@ -683,24 +683,33 @@ Rewards = (props)->
             rewardSlot = $amount = $newBalance = percentChange = apr =  "Loading..."
         $class = if epoch is store.staking.current-epoch then "syncing" else ""
         $tr-class = if epoch is store.staking.current-epoch then "current-epoch " else ""
-        tr.pug(key="epoch#{epoch}" class="#{$tr-class}")
-            td.pug(class="#{$class}") #{epoch}
-            td.pug(class="#{$class}") #{rewardSlot}
-            td.pug(class="#{$class}") #{$amount}
-            td.pug(class="#{$class}") #{$newBalance}
-            td.pug(class="#{$class}") #{percentChange}
-            td.pug(class="#{$class}") #{apr}
+        tr.pug(key="epoch#{epoch}" class="#{$tr-class} #{epoch}")
+            td.pug(key="epoch#{epoch}1" class="#{$class}") #{epoch}
+            td.pug(key="epoch#{epoch}2" class="#{$class}") #{rewardSlot}
+            td.pug(key="epoch#{epoch}3" class="#{$class}") #{$amount}
+            td.pug(key="epoch#{epoch}4" class="#{$class}") #{$newBalance}
+            td.pug(key="epoch#{epoch}5" class="#{$class}") #{percentChange}
+            td.pug(key="epoch#{epoch}6" class="#{$class}") #{apr}
     staker-pool-style =
         max-width: 200px
         background: style.app.stats
     stats=
         background: style.app.stats
-    react.useEffect (->
+    mountedRef = react.useRef(true)
+    return-fn = ->
+        mountedRef.current = no 
+          
+    fetchRewards = react.useCallback (!~>>
         err, $rewards <- fetchEpochRewards(account.address, activationEpoch)
+        return null if not mountedRef.current 
         setLoading(no)
         setRewards($rewards)
         store.staking.chosenAccount.rewards = $rewards
-        return ), []
+        return ), [mountedRef]
+            
+    react.useEffect (->
+        fetchRewards!
+        return return-fn ), [fetchRewards]
     .pug.section.rewards
         .title.pug
             h2.pug #{lang.uRewards}
