@@ -23,10 +23,20 @@ test.describe('Staking >', () => {
     await walletsScreen.openMenu('staking');
   });
 
-  test.describe('Actions >', () => {
+  test.describe.serial('Actions >', () => {
     // tests in this suite depend on each other
 
     const stakingAmount = 5;
+
+    test('Use max', async ({ page }) => {
+      // run first because wallet doen't have time to recalculate balance
+      const initialWalletBalance = Number((await velasNative.getBalance('59vpQgPoDEhux1G84jk6dbbARQqfUwYtohLU4fgdxFKG')).VLX.toFixed(0));
+
+      await page.click('" Create Account"');
+      await page.click('#send-max');
+      const maxAmount = await page.getAttribute('.input-area input', 'value');
+      assert.equal(Number(maxAmount?.replace(',', '')), initialWalletBalance - 1);
+    });
 
     test('Create staking account', async ({ page }) => {
       // const stakingAccountAddressesList = await stakingScreen.getStakingAccountsAddresses();
@@ -61,18 +71,6 @@ test.describe('Staking >', () => {
       assert.equal((await velasNative.getBalance(newlyAddedStakingAccountAddress)).VLX.toFixed(0), String(stakingAmount));
     });
 
-    test('Use max', async ({ page }) => {
-      const initialWalletBalance = Number((await velasNative.getBalance('59vpQgPoDEhux1G84jk6dbbARQqfUwYtohLU4fgdxFKG')).VLX.toFixed(0));
-
-      // balace used in 'use max' is not updated automatically, remove after bug-fix VLWA-552
-      await walletsScreen.refresh();
-      await page.waitForSelector('.amount:not(.placeholder)');
-
-      await page.click('" Create Account"');
-      await page.click('#send-max');
-      const maxAmount = await page.getAttribute('.input-area input', 'value');
-      assert.equal(Number(maxAmount?.replace(',', '')), initialWalletBalance - 1);
-    });
 
     test('Delegate stake', async ({ page }) => {
       const initialAmountOfDelegatedStakes = await stakingScreen.getAmountOfStakes('Undelegate');

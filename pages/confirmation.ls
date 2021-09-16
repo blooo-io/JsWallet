@@ -807,13 +807,17 @@ $network-details-modal = (store)->
     lang = get-lang store
     { dailyLimit, homeFeePercent, minPerTx, maxPerTx, wallet } = store.current.current-network-details
     { name, nickname } = wallet?coin
+    { referTo } = store.current.send.chosenNetwork
+    wallet-to = store.current.account.wallets |> find (-> it.coin.token is referTo)
     bridgeFeePercent = homeFeePercent `times` 100
     dailyLimit = round-human(dailyLimit, {decimals: 2})
     minPerTx   = round-human(minPerTx,   {decimals: 8})
     maxPerTx   = round-human(maxPerTx,   {decimals: 2})
     currency = (nickname ? "").to-upper-case!
       
-    title = (name ? "").to-upper-case!
+    from-network = (name ? "").to-upper-case!
+    to-network   = (wallet-to.coin.name ? "").to-upper-case!
+    title = "Swap from #{from-network} to #{to-network}"
     .pug.confirmation
         .pug.confirmation-body(style=confirmation)
             .pug.buttons

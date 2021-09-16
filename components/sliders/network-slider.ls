@@ -16,7 +16,7 @@ require! {
         position: absolute !important
         right: -1px
         top: 45px
-        width: 240px
+        width: 100%
         display: inline-grid
         z-index: 3
         box-shadow: 0px 13px 20px 0px rgba(0, 0, 0, 0.15)
@@ -161,8 +161,10 @@ require! {
             
           
         &.network-to
-            right: 35px  
+            right: 0  
             color: #ce942c 
+            left: 0
+            text-align: center
     .default-network-input
         position: relative
         
@@ -196,6 +198,7 @@ require! {
             
     .navigation-button
         transition: opacity 0.2
+        z-index: 2
         &:hover
             opacity: 0.9
         &.inactive
@@ -333,10 +336,11 @@ module.exports = ({ web3t, wallet, store, id, on-change })->
     /* Render */
     .pug.network-slider 
         label.pug.control-label(style=style2) Choose Network
-        span.pug.chosen-network.network-from(on-click=network-from-details style=choose-network-style)
-            | #{network-from} 
+        if no
+            span.pug.chosen-network.network-from(on-click=network-from-details style=choose-network-style)
+                | #{network-from} 
 
-        span.pug.chosen-network.network-to(on-click=network-to-details style=choose-network-style)
+        span.pug.chosen-network.network-to(on-click=network-from-details style=choose-network-style)
             | #{network-to}
                             
         .pug

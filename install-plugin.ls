@@ -106,7 +106,7 @@ install-all-plugins = ([plugin, ...rest], cb)->
     return cb err if err?
     cb null   
       
-install-plugin = (plugin, cb)->
+export install-plugin = (plugin, cb)->
     err <- verify-plugin plugin
     return cb err if err?
     plugin.can-uninstall = yes
