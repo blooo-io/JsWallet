@@ -6,6 +6,7 @@ import { setupPage } from '../../pw-helpers/setup-page';
 import { Auth } from '../../screens/auth';
 import { Currency, WalletsScreen } from '../../screens/wallets';
 import { data } from '../../test-data';
+import { helpers } from '../../tools/helpers';
 
 let auth: Auth;
 let walletsScreen: WalletsScreen;
@@ -52,8 +53,8 @@ test.describe('Balance >', () => {
           await velasNative.waitForConfirmedTransaction(tx);
           await walletsScreen.updateBalances();
           // const newAmountOfTokens = Number(await (await walletElement.$('.info .token.price'))?.getAttribute('title')).toFixed(6);
-          const newAmountOfTokens = Number((await walletsScreen.getWalletsBalances())['Velas Native'])?.toFixed(6);
-          assert.equal(newAmountOfTokens, (VLXNativeBalanceOnBlockchain + balanceUpdateAmount).toFixed(6), 'Velas Native wallet balance was not updated after funding it');
+          const newAmountOfTokens = helpers.toFixed(Number((await walletsScreen.getWalletsBalances())['Velas Native']), 6);
+          assert.equal(newAmountOfTokens, helpers.toFixed((VLXNativeBalanceOnBlockchain + balanceUpdateAmount), 6), 'Velas Native wallet balance was not updated after funding it');
           break;
         case 'Bitcoin':
           // TODO: make api request before to ckeck if service works; then uncomment next line

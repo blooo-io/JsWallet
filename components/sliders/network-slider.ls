@@ -244,10 +244,10 @@ module.exports = ({ web3t, wallet, store, id, on-change })->
         background: style.app.account-bg
     input-style2 =
         background: style.app.input
-        color: style.app.text
+        color: "rgb(206 148 44)"
         border: "0"
         opacity: 1
-        font-size: 0
+        text-transform: "uppercase"
     choose-network-style = 
         | is-not-bridge! => {}
         | _ =>
@@ -259,7 +259,37 @@ module.exports = ({ web3t, wallet, store, id, on-change })->
         margin-left: "-6px"
         margin-top: "4px"
         filter: "grayscale(100%) brightness(40%) sepia(100%) hue-rotate(14deg) saturate(790%) contrast(1.5)"
-    
+    info-style =
+        width: "10px"
+        height: "10px"
+        font-size: "10px"
+        margin-left: "10px"
+        margin-top: "-1px"
+        float: "revert"
+        display: "block"
+        
+    tooltip-style =
+        position: "absolute"
+        right: "0"
+        bottom: "-21px"        
+        
+    limits-label-style =
+        font-size: "11px"
+        color: "rgb(206, 148, 44)" 
+        display: "block"
+        position: "relative"
+        left: "-24px"
+        text-transform: "uppercase"
+        text-decoration: "underline"
+        cursor: "help"   
+    pointer-style =    
+        | network-labels.length > 1 =>
+            cursor: "pointer" 
+            min-height: "36px"
+        | _ => 
+            cursor: "default"
+            min-height: "36px"
+    input-style2 <<<< pointer-style        
     
     
     display-value = store.current.send.chosen-network.name.to-upper-case!
@@ -339,13 +369,13 @@ module.exports = ({ web3t, wallet, store, id, on-change })->
         if no
             span.pug.chosen-network.network-from(on-click=network-from-details style=choose-network-style)
                 | #{network-from} 
-
-        span.pug.chosen-network.network-to(on-click=network-from-details style=choose-network-style)
-            | #{network-to}
+        if no
+            span.pug.chosen-network.network-to(style=choose-network-style)
+                | #{network-to}
                             
         .pug
-            span.pug.bold.default-network-input
-                input.pug.change-network(value="#{display-value}" style=input-style2  disabled=true)
+            span.pug.bold.default-network-input(style=pointer-style on-click=dropdown-click)
+                input.pug.change-network(value="#{network-to}" style=input-style2 disabled=true)
             
             span.pug.button.navigation-button.right(on-click=dropdown-click class="#{dropdown-class}")
                 .pug.button-inner
@@ -357,3 +387,10 @@ module.exports = ({ web3t, wallet, store, id, on-change })->
                         available-networks  
                             |> obj-to-pairs 
                             |> map create-network-position
+                            
+        if not is-not-bridge!
+            .pug.limits-tooltip(style=tooltip-style on-click=network-from-details)
+                span.pug 
+                    img.icon-svg.pug(src="#{icons.info}" style=info-style)
+                    span.pug(style=limits-label-style) limits  
+                        

@@ -8,6 +8,7 @@ import { log } from '../tools/logger';
 import { velasNative } from '@velas/velas-chain-test-wrapper';
 import velasTestnet from '../api/velas-testnet/rpc';
 import { getWalletURL } from '../config';
+import { helpers } from '../tools/helpers';
 
 let auth: Auth;
 let walletsScreen: WalletsScreen;
@@ -49,7 +50,7 @@ test.describe('Swap: ', () => {
     assert.isBelow(Number(vlxSenderFinalBalance), Number(vlxSenderInitialBalance) - transactionAmount);
 
     const nativeReceiverFinalBalance = await velasNative.getBalance(data.wallets.swap.address);
-    assert.equal(Number(nativeReceiverFinalBalance.VLX).toFixed(6), Number(nativeReceiverInitialBalance.VLX + transactionAmount).toFixed(6));
+    assert.equal(helpers.toFixed(nativeReceiverFinalBalance.VLX, 6), helpers.toFixed(nativeReceiverInitialBalance.VLX + transactionAmount));
   });
 
   test('VLX Native > VLX Legacy', async ({ page }) => {
@@ -72,10 +73,10 @@ test.describe('Swap: ', () => {
     await walletsScreen.waitForWalletsDataLoaded();
 
     const nativeSenderFinalBalance = await velasNative.getBalance(data.wallets.swap.address);
-    assert.isBelow(Number(nativeSenderFinalBalance.VLX), Number(nativeSenderInitialBalance.VLX) - transactionAmount);
+    assert.isBelow(nativeSenderFinalBalance.VLX, nativeSenderInitialBalance.VLX - transactionAmount);
 
     const vlxReceiverFinalBalance = (await walletsScreen.getWalletsBalances())['Velas'];
-    assert.equal(Number(vlxReceiverFinalBalance).toFixed(6), (Number(vlxReceiverInitialBalance) + transactionAmount).toFixed(6));
+    assert.equal(helpers.toFixed(Number(vlxReceiverFinalBalance), 6), (helpers.toFixed(Number(vlxReceiverInitialBalance) + transactionAmount, 6)));
   });
 
   test('EVM > Legacy', async ({ page }) => {

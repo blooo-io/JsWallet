@@ -13,16 +13,16 @@ export class StakingScreen extends BaseScreen {
 
   delegateButton = '#staking-accounts tr.inactive span:text(" Delegate")';
 
-  undelegateButton = '#staking-accounts .action-undelegate span:text(" Undelegate")';
+  undelegateButton = '#staking-accounts button:not([disabled]).action-undelegate span:text(" Undelegate")';
 
-  withdrawButton = '#staking-accounts tr.loading span:text(" Withdraw")';
+  withdrawButton = '#staking-accounts tr.loading button:not([disabled]) span:text(" Withdraw")';
 
   stakingAccountAddress = '#staking-accounts [datacolumn="Staker Address"]';
 
   async waitForLoaded(): Promise<void> {
     try {
       const loadingSelector = '" Loading..."';
-      await this.page.waitForSelector(loadingSelector, { timeout: 500 });
+      await this.page.waitForSelector(loadingSelector, { timeout: 1000 });
       while (await this.page.isVisible(loadingSelector)) {
         await this.page.waitForTimeout(500);
       }
@@ -95,6 +95,14 @@ export class StakingScreen extends BaseScreen {
       await this.page.click(this.undelegateButton);
     } catch (e) {
       throw new Error(`No stakes available to undelegate. Please delegate first\n${e}`);
+    }
+  }
+
+  async clickWithdraw(): Promise<void> {
+    try {
+      await this.page.click(this.withdrawButton);
+    } catch (e) {
+      throw new Error(`No stakes available to withdraw. Please undelegate first\n${e}`);
     }
   }
 
@@ -197,5 +205,52 @@ export class StakingScreen extends BaseScreen {
       }
     }
     log.info(`Withdrawed staking account: ${address}`);
+  }
+
+  stakingCleanup = {
+    stakesToUndelegate: async () => {
+      let toUndelegateStakesAmount = await this.getAmountOfStakes('Undelegate');
+      while(toUndelegateStakesAmount > 0){
+        await this.clickUndelegate();
+        await this.page.click('" Confirm"');
+        await this.page.waitForSelector('" Funds undelegated successfully"');
+        await this.page.click('" Ok"');
+        await this.waitForLoaded();
+        toUndelegateStakesAmount = await this.getAmountOfStakes('Undelegate');
+      }
+    },
+    stakesToWithdraw: async () => {
+      let toWithdrawStakesAmount = await this.getAmountOfStakes('Withdraw');
+      while(toWithdrawStakesAmount > 0){
+        await this.clickWithdraw();
+        await this.page.click('" Confirm"');
+        await this.page.waitForSelector('" Funds withdrawn successfully"');
+        await this.page.click('" Ok"');
+        await this.waitForLoaded();
+        toWithdrawStakesAmount = await this.getAmountOfStakes('Withdraw');
+      }
+    },
+    stakesNotDelegated: async () => {
+      let notDelegatedStakesAmount = await this.getAmountOfStakes('Delegate');
+      while(notDelegatedStakesAmount > 0){
+        await this.selectAccount('Delegate');
+        await this.page.click('button span:text(" Withdraw")');
+        await this.page.click('" Confirm"');
+        await this.page.waitForSelector('" Funds withdrawn successfully"');
+        await this.page.click('" Ok"');
+        await this.waitForLoaded();
+        notDelegatedStakesAmount = await this.getAmountOfStakes('Delegate');
+      }
+    },
+  }
+  
+  async makeSureUiBalanceEqualsChainBalance(address: string): Promise<void> {
+    const initialWalletBalance = helpers.toFixed((await velasNative.getBalance(address)).VLX);
+    let uiBalance = await (await this.page.innerText('.section .description span')).replace('VLX', '').trim();
+    while(initialWalletBalance !== helpers.toFixed(Number(uiBalance))){
+      await this.refresh();
+      uiBalance = await (await this.page.innerText('.section .description span')).replace('VLX', '').trim();
+      log.debug('Balance on UI is not the same as on blockchain, refreshing...');
+    }
   }
 }

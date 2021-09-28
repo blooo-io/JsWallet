@@ -66,7 +66,7 @@ require! {
         font-size: 22px
         padding: 10px
         height: 60px
-        z-index: 2
+        z-index: 3
         @media(max-width:800px)
             left: 0
         >.header
@@ -196,6 +196,7 @@ require! {
                             left: 0
                         &.right
                             right: 0
+                            top: 3px
                         svg
                             vertical-align: inherit !important
                 margin-top: 4px

@@ -1,0 +1,136 @@
+name: e2e-tests
+on:
+  pull_request:
+    branches:    
+      - '!allure'
+concurrency:
+  group: js-wallet-e2e-tests-${{github.event.pull_request.number}}
+  cancel-in-progress: true
+jobs:
+  e2e-tests:
+    # runs-on: ubuntu-latest
+    runs-on: macos-internal2
+    defaults:
+      run:
+        working-directory: ./e2e
+    steps:
+
+      - name: checkout JsWallet
+        uses: actions/checkout@v2
+
+      - name: checkout web3t
+        uses: actions/checkout@v2
+        with:
+          repository: velas/web3t
+          path: .compiled-ssr/web3t
+          # token: ${{ secrets.GITHUB_TOKEN }}
+          ref: testnet
+
+      - name: install web3t modules
+        working-directory: .compiled-ssr/web3t
+        run: npm i
+
+      - name: copy web3 side by side to wallet
+        working-directory: ../
+        run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ web3t/
+
+      - name: delete wallet build cache
+        working-directory: ./
+        run: rm -rf ./.compiled
+
+      # sleep required for wallet start
+      - name: run wallet
+        working-directory: ./
+        run: |
+          npm run wallet-start &
+          sleep 16 &&
+          echo '- - - - - Wallet started - - - - -'
+
+      - name: install modules required for testrun
+        run: npm ci
+
+      # - name: install required browsers
+      #   run: npx playwright install chrome
+
+      - name: clean previous test results
+        run: rm -rf ./test-results/
+
+      - name: blockchain health check
+        run: CI=true LOG_LEVEL=info npm run blockchain-health-check
+
+      - name: run tests
+        run: CI=true LOG_LEVEL=info npm test
+
+      - name: run tests-stable
+        run: CI=true LOG_LEVEL=info npm run test-stable
+
+      # report creation will fail if testrun fails (if testrun is interrupted)
+      - name: create html report from junit
+        if: always()
+        run: junit2html test-results/test-results.xml test-results/report.html
+
+      - name: upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: |
+            e2e/test-results/
+
+# RUN ON UBUNTU
+# name: e2e-tests
+# on:
+#   pull_request:
+# concurrency:
+#   group: e2e-tests-${{github.event.pull_request.number}}
+#   cancel-in-progress: true
+# jobs:
+#   e2e-tests:
+#     runs-on: ubuntu-latest
+#     # runs-on: macos-internal2
+#     defaults:
+#       run:
+#         working-directory: ./e2e
+#     steps:
+#       - uses: actions/checkout@v2
+
+#       - uses: actions/checkout@v2
+#         with:
+#           repository: velas/web3t
+#           path: .compiled-ssr/web3t
+#           # token: ${{ secrets.GITHUB_TOKEN }}
+#           ref: testnet
+
+#       - name: install lsxc
+#         run: npm i lsxc -g
+
+#       - name: install junit2html
+#         run: pip3 install junit2html
+
+#       # sleep required for wallet start
+#       - name: run wallet
+#         working-directory: ./
+#         run: |
+#           npm run wallet-start &
+#           sleep 15 &&
+#           echo '- - - - - Wallet started - - - - -'
+#       - name: install modules required for testrun
+#         run: npm i
+
+#       # - name: install required browsers
+#       #   run: npx playwright install chrome
+
+#       - name: run tests
+#         run: CI=true LOG_LEVEL=info DEBUG=pw:api npm test
+
+#       - name: create html report from junit
+#         if: always()
+#         run: junit2html test-results/test-results.xml test-results/report.html
+
+#       - name: upload artifacts
+#         if: always()
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: test-results
+#           path: |
+#             e2e/test-results/

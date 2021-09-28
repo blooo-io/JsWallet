@@ -56,14 +56,17 @@ load-validators-from-cache = ({store, web3t}, cb)->
     DEADLINE = 60000 # 1 minute
     last-time = store.staking.last-time ? new Date().getTime()
     now = new Date().getTime()
+    network = store.current.network
+    cachedNetwork = store.staking.cachedValidatorsNetwork
     if now `minus` last-time <= DEADLINE and store.staking.cachedValidators? and store.staking.cachedValidators.length
-        #console.log "get validators from cache"
-        cache-result = store.staking.cachedValidators  
-        return cb null, cache-result  
+        if cachedNetwork is network then
+            cache-result = store.staking.cachedValidators  
+            return cb null, cache-result  
     err, validators <- as-callback web3t.velas.NativeStaking.getStakingValidators()
     console.error "GetStakingValidators err: " err if err?  
     return cb null, [] if err?
     store.staking.cachedValidators = validators  
+    store.staking.cachedValidatorsNetwork = network
     store.staking.last-time = new Date().getTime()
     cb null, validators    
 query-pools-web3t = ({store, web3t, on-progress}, on-finish) -> 
@@ -94,14 +97,18 @@ fill-delegator = (store, web3t, [acc, ...accounts])!->
 # Accounts
 query-accounts = (store, web3t, on-progress, on-finish) ->
     accountIndex = store.current.accountIndex
+    network = store.current.network
+    cachedNetwork = store.staking.cachedAccountsNetwork
     if (store.staking.getAccountsFromCashe is yes) and store.staking.accountsCached[accountIndex]? and store.staking.accountsCached[accountIndex].length > 0
-        #console.log "get accounts from cache"
-        store.staking.all-accounts-loaded = yes
-        store.staking.accounts-are-loading = no
-        return on-finish null, store.staking.accountsCached[accountIndex]
+        if cachedNetwork is network then
+            #console.log "get accounts from cache"
+            store.staking.all-accounts-loaded = yes
+            store.staking.accounts-are-loading = no
+            return on-finish null, store.staking.accountsCached[accountIndex]
     err, accounts <- query-accounts-web3t store, web3t, on-progress
     return on-finish err if err?
     store.staking.accountsCached[accountIndex] = accounts
+    store.staking.cachedAccountsNetwork = network
     on-finish err, accounts
 query-accounts-web3t = (store, web3t, on-progress, on-finish) -> 
     #owner-wallet = store.current.account.wallets |> find(-> it.coin.token is "vlx_native")

@@ -161,6 +161,8 @@ store =
         totalValidators: 0
         loadingValidatorIndex: 0
         get-accounts-last-time: null
+        cachedValidatorsNetwork: null
+        cachedAccountsNetwork: null
         cachedAccounts: null
         cachedValidators: null
         getAccountsFromCashe: yes
@@ -249,13 +251,15 @@ store =
             show: no    
         network-details:
             show: no
-            dailyLimit: 0  
+            dailyLimit: 0
+            remainingDailyLimit: 0  
             homeFeePercent: 0  
             minPerTx: 0    
             maxPerTx: 0
         foreign-network-details:
             show: no 
-            dailyLimit: 0  
+            dailyLimit: 0
+            remainingDailyLimit: 0  
             homeFeePercent: 0  
             minPerTx: 0    
             maxPerTx: 0 

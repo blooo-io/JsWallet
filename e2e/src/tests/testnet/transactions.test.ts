@@ -20,8 +20,6 @@ test.describe('Transactions >', () => {
   });
 
   test('Send ETH', async ({ page }) => {
-    await walletsScreen.addWalletsPopup.open();
-    await walletsScreen.addWalletsPopup.add('Ethereum Legacy');
     await walletsScreen.waitForWalletsDataLoaded();
     
     const transactionAmount = 0.00001;

@@ -6,6 +6,7 @@ import { setupPage } from '../../pw-helpers/setup-page';
 import { Auth } from '../../screens/auth';
 import { WalletsScreen } from '../../screens/wallets';
 import { data } from '../../test-data';
+import { helpers } from '../../tools/helpers';
 
 let auth: Auth;
 let walletsScreen: WalletsScreen;
@@ -46,7 +47,7 @@ test.describe('Transactions >', () => {
     // assert.equal(receiverAddress, data.wallets.fundsReceiver.address);
 
     const receiverFinalBalance = await velasNative.getBalance(data.wallets.fundsReceiver.address);
-    assert.equal(receiverFinalBalance.VLX.toFixed(6), (receiverInitialBalance.VLX + transactionAmount).toFixed(6));
+    assert.equal(helpers.toFixed(receiverFinalBalance.VLX, 6), helpers.toFixed((receiverInitialBalance.VLX + transactionAmount), 6));
 
     const senderFinalBalance = await velasNative.getBalance(data.wallets.txSender.address);
     assert.isBelow(senderFinalBalance.VLX, senderInitialBalance.VLX - transactionAmount, 'Final sender balance is not below the initial sender balance');

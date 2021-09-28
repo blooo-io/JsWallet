@@ -7,19 +7,19 @@ const config: PlaywrightTestConfig = {
   globalSetup: 'src/pw-helpers/before-hook.ts',
   // globalTeardown: '',
   maxFailures: globalConfig.CI ? 10 : 2,
-  retries: process.env.CI ? 1 : 0,
+  retries: process.env.CI ? 2 : 0,
   timeout: 120000,
   workers: 1,
   // reporter: 'list',
   // repeatEach: 5,
-  reporter: [['list'], ['junit', { outputFile: 'test-results/test-results.xml' }]],
+  reporter: [['list'], ['junit', { outputFile: 'test-results/test-results.xml' }], ['allure-playwright']],
   projects: [
     {
       name: 'Chrome Stable',
       use: {
         browserName: 'chromium',
         channel: 'chrome',
-        headless: globalConfig.CI,
+        headless: true,
         launchOptions: {
           args: ['--disable-dev-shm-usage', '--disable-gpu', '--no-sandbox', `--window-size=${windowSize.width},${windowSize.height}`, '--disable-features=TranslateUI'],
           devtools: false,

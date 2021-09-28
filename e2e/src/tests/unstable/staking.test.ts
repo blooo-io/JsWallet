@@ -7,6 +7,7 @@ import { Auth } from '../../screens/auth';
 import { StakingScreen } from '../../screens/staking';
 import { WalletsScreen } from '../../screens/wallets';
 import { data } from '../../test-data';
+import { helpers } from '../../tools/helpers';
 
 let auth: Auth;
 let walletsScreen: WalletsScreen;
@@ -28,26 +29,29 @@ test.describe('Staking >', () => {
 
     const stakingAmount = 5;
 
-    test('Use max', async ({ page }) => {
-      // run first because wallet doen't have time to recalculate balance
-      const initialWalletBalance = Number((await velasNative.getBalance('59vpQgPoDEhux1G84jk6dbbARQqfUwYtohLU4fgdxFKG')).VLX.toFixed(0));
+    test('Previous run cleanup', async () => {
+      await stakingScreen.waitForLoaded();
+      await stakingScreen.stakingCleanup.stakesToUndelegate();
+      await stakingScreen.stakingCleanup.stakesToWithdraw();
+      await stakingScreen.stakingCleanup.stakesNotDelegated();
+    });
 
+    test('Use max', async ({ page }) => {
+      await stakingScreen.makeSureUiBalanceEqualsChainBalance(data.wallets.staking.staker.publicKey);
+      
+      const initialWalletBalance = helpers.toFixed((await velasNative.getBalance(data.wallets.staking.staker.publicKey)).VLX);
       await page.click('" Create Account"');
       await page.click('#send-max');
-      const maxAmount = await page.getAttribute('.input-area input', 'value');
-      assert.equal(Number(maxAmount?.replace(',', '')), initialWalletBalance - 1);
+      const maxAmountString = await page.getAttribute('.input-area input', 'value');
+      const maxAmount = helpers.toFixed(Number(maxAmountString?.replace(',', '')));
+      assert.equal(maxAmount, initialWalletBalance - 1);
     });
 
     test('Create staking account', async ({ page }) => {
-      // const stakingAccountAddressesList = await stakingScreen.getStakingAccountsAddresses();
-      // if (stakingAccountAddressesList.length) throw new Error(`This test suite cannot be passed because staking accounts list should be empty.
-      // Please delete all staking accounts for account with seed "${data.wallets.staking.staker.seed}"`);
-      // TODO: implement auto deletion
-
-      const VLXNativeAddress = '59vpQgPoDEhux1G84jk6dbbARQqfUwYtohLU4fgdxFKG';
+      const VLXNativeAddress = data.wallets.staking.staker.publicKey;
       const initialAmountOfStakingAccounts = await stakingScreen.getAmountOfStakes('Delegate');
       const stakingAccountAddresses = await stakingScreen.getStakingAccountsAddresses();
-      const initialWalletBalance = Number((await velasNative.getBalance(VLXNativeAddress)).VLX.toFixed(0));
+      const initialWalletBalance = helpers.toFixed((await velasNative.getBalance(VLXNativeAddress)).VLX);
 
       await page.click('" Create Account"');
       await page.fill('.input-area input', String(stakingAmount));
@@ -63,14 +67,13 @@ test.describe('Staking >', () => {
       if (!newlyAddedStakingAccountAddress) throw new Error('No new staking account appears in the list');
 
       // assert VLXNative balance decreases on staking amount
-      const finalWalletBalance = Number((await velasNative.getBalance(VLXNativeAddress)).VLX.toFixed(0));
+      const finalWalletBalance = helpers.toFixed((await velasNative.getBalance(VLXNativeAddress)).VLX);
       assert.equal(finalWalletBalance, initialWalletBalance - stakingAmount);
 
       // check newly created staking account on blockchain
       await stakingScreen.makeSureStakingAccIsCreatedAndNotDelegated(newlyAddedStakingAccountAddress);
-      assert.equal((await velasNative.getBalance(newlyAddedStakingAccountAddress)).VLX.toFixed(0), String(stakingAmount));
+      assert.equal(helpers.toFixed((await velasNative.getBalance(newlyAddedStakingAccountAddress)).VLX), stakingAmount);
     });
-
 
     test('Delegate stake', async ({ page }) => {
       const initialAmountOfDelegatedStakes = await stakingScreen.getAmountOfStakes('Undelegate');
