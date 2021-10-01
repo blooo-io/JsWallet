@@ -530,26 +530,26 @@ manage-account = (store, web3t)->
     input-style2 = { ...input-style, width: "85px" }
     button-style2 = { ...button-primary2-style, width: "20px" }
     .pug
-        .pug.section
+        .pug.section(id="section-change-language")
             .pug.title(style=color) #{lang.language}
             .pug.description(style=color)
                 span.pug #{lang.languageWebWallet}
                 span.pug - #{lang.language-type}
-            .pug.content
+            .pug.content(id="switch-language")
                 switch-language store, web3t
-        .pug.section
+        .pug.section(id="section-switch-account-index")
             .pug.title(style=color) #{lang.switch-account-index}
             .pug.description(style=color)
                 span.pug #{lang.switch-account-info }
             .pug.content
                 switch-account store, web3t
-        .pug.section
+        .pug.section(id="section-export-private-key")
             .pug.title(style=color) #{lang.export-private-key}
             .pug.description(style=color)
                 span.pug #{lang.export-private-key-warning}.
             .pug.content
-                button { store, text: \showSecret , on-click: export-private-key, icon: \show, type: \secondary }
-        .pug.section
+                button { store, text: \showSecret , on-click: export-private-key, icon: \show, type: \secondary id: "btn-copy" }
+        .pug.section(id="section-switch-network")
             .pug.title(style=color) #{lang.network}
             .pug.description(style=color)
                 if store.current.network is \testnet
@@ -560,13 +560,13 @@ manage-account = (store, web3t)->
                     span.pug #{lang.network-description}
             .pug.content
                 switch-network store, web3t
-        .pug.section
+        .pug.section(id="section-themes")
             .pug.title(style=color) #{lang.themes}
             .pug.description(style=color)
                 span.pug #{lang.themes-description}
             .pug.content
                 choose-themes store, web3t
-        .pug.section
+        .pug.section(id="section-build-info")
             .pug.title(style=color)
                 .pug.logo
                     img.pug(src="#{style.branding.logo}" style=logo-style)

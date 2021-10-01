@@ -72,7 +72,7 @@ jobs:
           cd deploy/prod
           helmfile -e default -l namespace=${NAMESPACE},name=velas-wallet apply  --set image.tag=$IMAGE_TAG,image.repository=$ECR_REGISTRY/$ECR_REPOSITORY --skip-deps
   e2e-tests:
-    runs-on: macos-internal2
+    runs-on: ubuntu-latest
     needs: [docker-build-push, deploy]
     defaults:
       run:
@@ -80,15 +80,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: install modules required for testrun
-        run: npm ci
+        run: npm i
+      - name: install required browsers
+        run: npx playwright install chrome
       - name: clean previous test results
         run: rm -rf ./test-results/
       - name: run tests
         run: CI=true LOG_LEVEL=debug ENVIRONMENT=testnet npm run test-testnet
-        # report creation will fail if tests fail
-      - name: create html report from junit
-        if: always()
-        run: junit2html test-results/test-results.xml test-results/report.html
       - name: upload artifacts
         if: always()
         uses: actions/upload-artifact@v2

@@ -118,7 +118,7 @@ build-version = (store, release)-->
     console.log "#{release.name}.md5"
     md5-file =
         store.releases |> find (-> it.name is "#{release.name}.md5")
-    .pug.platform(style=resource)
+    .pug.platform(style=resource id="platform-#{name}")
         img.pug.title-icons(src="#{icon}")
         .pug.title #{name}
         .pug.tag_name #{release.tag_name}

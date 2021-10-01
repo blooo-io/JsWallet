@@ -323,11 +323,11 @@ language = (store, web3t)->
                         img.pug(src="#{icons.langs-vn}")
                         .pug Tiếng Việt
             .pug.downloadwalletlist
-                a.pug(href="https://apps.apple.com/us/app/velas-mobile-wallet/id1541032748" target="_blank")
+                a.pug(href="https://apps.apple.com/us/app/velas-mobile-wallet/id1541032748" target="_blank" id="download-ios")
                     img.icon-download.pug(src="#{icons[\ios]}")
-                a.pug(href="https://play.google.com/store/apps/details?id=com.velas.mobile_wallet" target="_blank")
+                a.pug(href="https://play.google.com/store/apps/details?id=com.velas.mobile_wallet" target="_blank" id="download-android")
                     img.icon-download.pug(src="#{icons[\android]}")
-                span.pug
+                span.pug(id="download-desktop")
                     img.icon-download.pug(on-click=download src="#{icons[\desktop]}")
 module.exports = ({ store, web3t } )->
     return null if store.current.choose-language isnt yes

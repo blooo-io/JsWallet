@@ -185,7 +185,7 @@ create-item = ({ store, web3t }, item)-->
         background: style.app.input
     menu-style=
         color: style.app.text
-    .item.pug(style=background)
+    .item.pug(style=background, id="add-token-#{title}")
         img.pug(src="#{item.image}")
         span.pug.title(style=menu-style) #{title}
         button.pug(on-click=add style=button-style)
@@ -296,7 +296,7 @@ module.exports = ({ store, web3t } )->
             | _ => ''
         wallets = item.1
         
-        .wallet-group.pug
+        .wallet-group.pug(id="wallet-group-add-#{group-name}")
             .pug.group-name #{group-name} Network         
             wallets |> map create-item { store, web3t }  
     

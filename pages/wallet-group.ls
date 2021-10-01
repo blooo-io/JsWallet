@@ -266,7 +266,7 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
         | _ => ''
     wallets = wallets-group.1
 
-    .wallet-group.pug
+    .wallet-group.pug(id="wallet-group-switch-#{(group-name)}")
         .pug.group-name #{group-name} Network
 
         wallets |> map (wallet)->
@@ -286,7 +286,7 @@ module.exports = (store, web3t, wallets, wallets-groups, wallets-group)-->
             send-swap-disabled = wallet-is-disabled or is-loading
 
             /* Render */
-            .wallet.pug.wallet-item(class="#{big} #{disabled-class}" key="#{token}" style=border-style)
+            .wallet.pug.wallet-item(class="#{big} #{disabled-class}" key="#{token}" style=border-style id="token-#{token}")
                 .wallet-top.pug(on-click=expand)
                     .top-left.pug(style=wallet-style)
                         .img.pug(class="#{placeholder-coin}")

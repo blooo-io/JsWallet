@@ -29,19 +29,6 @@ jobs:
       - name: install lsxc
         run: npm i lsxc -g
 
-      # - name: if unable to open x display
-      #   run: sudo apt-get update && sudo apt-get install -y xvfb
-      # - name: if unable to open x display
-      #   run: sudo apt-get -y install xorg 
-      # - name: if unable to open x display
-      #   run: sudo apt-get install xfonts-scalable
-      # - name: if unable to open x display
-      #   run: sudo apt-get install -y xfonts-cyrillic xfonts-75dpi xfonts-100dpi xfonts-base 
-      # - name: if unable to open x display
-      #   run: sudo apt-get install -y dbus-x11
-      # - name: if unable to open x display
-      #   run: sudo apt-get install -y gtk2-engines-pixbuf
-
       - name: copy web3 side by side to wallet
         working-directory: ../
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./

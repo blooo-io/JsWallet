@@ -383,7 +383,7 @@ module.exports = ({ web3t, wallet, store, id, on-change })->
             
             if store.current.switch-network and network-labels.length > 1
                 .pug.switch-menu(style=filter-body)
-                    .pug.middle.account
+                    .pug.middle.account(id="swap-to-network-#{network-to}")
                         available-networks  
                             |> obj-to-pairs 
                             |> map create-network-position
