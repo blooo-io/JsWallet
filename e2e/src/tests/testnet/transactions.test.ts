@@ -24,7 +24,7 @@ test.describe('Transactions >', () => {
     
     const transactionAmount = 0.00001;
 
-    await walletsScreen.selectWallet('Ethereum Legacy');
+    await walletsScreen.selectWallet('token-eth_legacy');
     await page.click('#wallets-send');
     await page.fill('#send-recipient', '0xb322f01cb6a191974e7291600a4dc1b46f00f752'); //accound with index 2
     await page.type('div.amount-field input[label="Send"]', String(transactionAmount));

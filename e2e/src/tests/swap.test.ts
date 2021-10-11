@@ -27,11 +27,11 @@ test.describe('Swap: ', () => {
     // TODO
     test.skip();
 
-    const vlxSenderInitialBalance = (await walletsScreen.getWalletsBalances())['Velas'];
+    const vlxSenderInitialBalance = (await walletsScreen.getWalletsBalances())['token-vlx2'];
     const nativeReceiverInitialBalance = await velasNative.getBalance(data.wallets.swap.address);
     const transactionAmount = 0.0001;
 
-    await walletsScreen.swapTokens('Velas', 'Velas Native', transactionAmount);
+    await walletsScreen.swapTokens('token-vlx2', 'token-vlx_native', transactionAmount);
     await walletsScreen.openMenu('wallets');
 
     const previousTx = (await velasTestnet.getConfirmedTransactionsForAddress(data.wallets.swap.address)).signatures[0];
@@ -46,7 +46,7 @@ test.describe('Swap: ', () => {
 
     await walletsScreen.waitForWalletsDataLoaded();
 
-    const vlxSenderFinalBalance = (await walletsScreen.getWalletsBalances())['Velas'];
+    const vlxSenderFinalBalance = (await walletsScreen.getWalletsBalances())['token-vlx2'];
     assert.isBelow(Number(vlxSenderFinalBalance), Number(vlxSenderInitialBalance) - transactionAmount);
 
     const nativeReceiverFinalBalance = await velasNative.getBalance(data.wallets.swap.address);
@@ -58,11 +58,11 @@ test.describe('Swap: ', () => {
     test.skip();
 
     const nativeSenderInitialBalance = await velasNative.getBalance(data.wallets.swap.address);
-    const vlxReceiverInitialBalance = (await walletsScreen.getWalletsBalances())['Velas'];
+    const vlxReceiverInitialBalance = (await walletsScreen.getWalletsBalances())['token-vlx2'];
 
     const transactionAmount = 0.0001;
 
-    await walletsScreen.swapTokens('Velas Native', 'Velas', transactionAmount);
+    await walletsScreen.swapTokens('token-vlx_native', 'token-vlx2', transactionAmount);
 
     const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
     const txSignature = txSignatureLink.replace('https://native.velas.com/tx/', '');
@@ -75,12 +75,12 @@ test.describe('Swap: ', () => {
     const nativeSenderFinalBalance = await velasNative.getBalance(data.wallets.swap.address);
     assert.isBelow(nativeSenderFinalBalance.VLX, nativeSenderInitialBalance.VLX - transactionAmount);
 
-    const vlxReceiverFinalBalance = (await walletsScreen.getWalletsBalances())['Velas'];
+    const vlxReceiverFinalBalance = (await walletsScreen.getWalletsBalances())['token-vlx2'];
     assert.equal(helpers.toFixed(Number(vlxReceiverFinalBalance), 6), (helpers.toFixed(Number(vlxReceiverInitialBalance) + transactionAmount, 6)));
   });
 
   test('EVM > Legacy', async ({ page }) => {
-    await walletsScreen.swapTokens('Velas EVM', 'Velas', 0.0001);
+    await walletsScreen.swapTokens('token-vlx_evm', 'token-vlx2', 0.0001);
 
     const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
     log.debug(txSignatureLink);
@@ -89,7 +89,7 @@ test.describe('Swap: ', () => {
   });
 
   test('Legacy > EVM', async ({ page }) => {
-    await walletsScreen.swapTokens('Velas', 'Velas EVM', 0.0001);
+    await walletsScreen.swapTokens('token-vlx2', 'token-vlx_evm', 0.0001);
 
     const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
     log.debug(txSignatureLink);
@@ -99,7 +99,7 @@ test.describe('Swap: ', () => {
 
   test('EVM > Native', async ({ page }) => {
     test.skip();
-    await walletsScreen.swapTokens('Velas EVM', 'Velas Native', 0.0001);
+    await walletsScreen.swapTokens('token-vlx_evm', 'token-vlx_native', 0.0001);
 
     const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
     log.debug(txSignatureLink);
@@ -109,7 +109,7 @@ test.describe('Swap: ', () => {
 
   test('Native > EVM', async ({ page }) => {
     test.skip();
-    await walletsScreen.swapTokens('Velas Native', 'Velas EVM', 0.0001);
+    await walletsScreen.swapTokens('token-vlx_native', 'token-vlx_evm', 0.0001);
 
     const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
     const txSignature = txSignatureLink.replace('https://native.velas.com/tx/', '');

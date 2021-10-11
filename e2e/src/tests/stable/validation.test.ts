@@ -16,7 +16,7 @@ test.describe('Validation >', () => {
     walletsScreen = new WalletsScreen(page);
     await page.goto(getWalletURL());
     await auth.loginByRestoringSeed(data.wallets.txSender.seed);
-    await walletsScreen.selectWallet('Velas Native');
+    await walletsScreen.selectWallet('token-vlx_native');
   });
 
   test('VLX Native: Show Invalid Address error', async ({ page }) => {

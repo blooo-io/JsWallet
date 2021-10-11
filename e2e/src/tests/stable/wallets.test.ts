@@ -22,7 +22,7 @@ test.describe('Wallets screen >', () => {
       // arrange
       await auth.loginByRestoringSeed(data.wallets.fundsReceiver.seed);
 
-      await walletsScreen.selectWallet('Velas Native');
+      await walletsScreen.selectWallet('token-vlx_native');
       await page.waitForSelector('.history-area div[datatesting="transaction"]', { timeout: 20000 });
       const transactions = await page.$$('.history-area div[datatesting="transaction"]');
       assert.isAbove(transactions.length, 10, 'Amount of transactions in the list is less than 10');
@@ -50,17 +50,17 @@ test.describe('Wallets screen >', () => {
     test('Add and hide litecoin wallet', async () => {
       // add litecoin
       await walletsScreen.addWalletsPopup.open();
-      await walletsScreen.addWalletsPopup.add('Litecoin');
-      await walletsScreen.selectWallet('Litecoin');
-      assert.isTrue(await walletsScreen.isWalletInWalletsList('Litecoin'));
+      await walletsScreen.addWalletsPopup.add('token-ltc');
+      await walletsScreen.selectWallet('token-ltc');
+      assert.isTrue(await walletsScreen.isWalletInWalletsList('token-ltc'));
 
       // remove litecoin
       await walletsScreen.hideWallet();
-      assert.isFalse(await walletsScreen.isWalletInWalletsList('Litecoin'));
+      assert.isFalse(await walletsScreen.isWalletInWalletsList('token-ltc'));
     });
 
     test('Switch account', async ({ page }) => {
-      await walletsScreen.selectWallet('Velas Native')
+      await walletsScreen.selectWallet('token-vlx_native');
       await page.click('.switch-account');
       await page.click('" Account 2"');
       assert.equal(await walletsScreen.getWalletAddress(), 'BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW', 'Account 2 address on UI does not equal expected');
@@ -76,7 +76,7 @@ test.describe('Wallets screen >', () => {
       // clear clipboard
       await page.evaluate(async () => await navigator.clipboard.writeText(''));
 
-      await walletsScreen.selectWallet('Velas Native');
+      await walletsScreen.selectWallet('token-vlx_native');
       await page.click('#wallets-receive');
       await page.waitForSelector('.ill-qr img');
       // qr code is displayed

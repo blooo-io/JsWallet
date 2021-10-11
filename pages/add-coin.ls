@@ -185,7 +185,7 @@ create-item = ({ store, web3t }, item)-->
         background: style.app.input
     menu-style=
         color: style.app.text
-    .item.pug(style=background, id="add-token-#{title}")
+    .item.pug(style=background, id="add-token-#{item.token}")
         img.pug(src="#{item.image}")
         span.pug.title(style=menu-style) #{title}
         button.pug(on-click=add style=button-style)

@@ -44,7 +44,7 @@ test.describe('Auth >', () => {
     test('custom seed phrase', async () => {
       await auth.loginByRestoringSeed(data.wallets.login.seed);
 
-      await walletsScreen.selectWallet('Velas Native');
+      await walletsScreen.selectWallet('token-vlx_native');
       assert.equal(await walletsScreen.getWalletAddress(), accountAddress24Words, 'Account address on UI does not equal expected');
 
     });
@@ -56,7 +56,7 @@ test.describe('Auth >', () => {
       await auth.pinForNewAcc.fillAndConfirm('111222');
       await auth.wordByWordSeedInputForm.fill(data.wallets.login.seedArr, { fast: true });
 
-      await walletsScreen.selectWallet('Velas Native');
+      await walletsScreen.selectWallet('token-vlx_native');
       assert.equal(await walletsScreen.getWalletAddress(), accountAddress24Words, 'Account address on UI does not equal expected');
     });
 
@@ -71,7 +71,7 @@ test.describe('Auth >', () => {
       seed12Words.length = 12;
       await auth.wordByWordSeedInputForm.fill(seed12Words);
 
-      await walletsScreen.selectWallet('Velas Native');
+      await walletsScreen.selectWallet('token-vlx_native');
       assert.equal(await walletsScreen.getWalletAddress(), accountAddress12Words, 'Account address on UI does not equal expected');
     });
 
@@ -102,7 +102,7 @@ test.describe('Auth >', () => {
     test('Log in with pin', async () => {
       await auth.pinForLoggedOutAcc.typeAndConfirm('111222');
 
-      await walletsScreen.selectWallet('Velas Native');
+      await walletsScreen.selectWallet('token-vlx_native');
       assert.equal(await walletsScreen.getWalletAddress(), accountAddress24Words, 'Account address on UI does not equal expected');
     });
   });

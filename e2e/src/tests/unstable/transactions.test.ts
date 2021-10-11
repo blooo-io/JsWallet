@@ -26,7 +26,7 @@ test.describe('Transactions >', () => {
     const senderInitialBalance = await velasNative.getBalance(data.wallets.txSender.address);
     const transactionAmount = 0.0001;
 
-    await walletsScreen.selectWallet('Velas Native');
+    await walletsScreen.selectWallet('token-vlx_native');
     await page.click('#wallets-send');
     await page.fill('#send-recipient', 'FJWtmzRwURdnrgn5ZFWvYNfHvXMtHK1WS7VHpbnfG73s');
     await page.type('div.amount-field input[label="Send"]', String(transactionAmount));
@@ -57,7 +57,7 @@ test.describe('Transactions >', () => {
     // TODO: network request error
     test.skip();
 
-    await walletsScreen.selectWallet('Bitcoin');
+    await walletsScreen.selectWallet('token-btc');
     await page.click('#wallets-send');
     await page.fill('#send-recipient', 'mvvFj8fbFpL61S2HyhvcqEHjT2ThB1f78j', { timeout: 15000 }); //accound with index 2
     await page.type('div.amount-field input[label="Send"]', '0.00001');
@@ -73,10 +73,10 @@ test.describe('Transactions >', () => {
     test.skip();
 
     await walletsScreen.addWalletsPopup.open();
-    await walletsScreen.addWalletsPopup.add('Litecoin');
+    await walletsScreen.addWalletsPopup.add('token-ltc');
     await walletsScreen.waitForWalletsDataLoaded();
 
-    await walletsScreen.selectWallet('Litecoin');
+    await walletsScreen.selectWallet('token-ltc');
     await page.click('#wallets-send', { timeout: 10000 });
     await page.fill('#send-recipient', 'mvvFj8fbFpL61S2HyhvcqEHjT2ThB1f78j'); //accound with index 2
     await page.type('div.amount-field input[label="Send"]', '0.00001');
