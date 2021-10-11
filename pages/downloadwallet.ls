@@ -7,6 +7,7 @@ require! {
     \../icons.ls
     \../navigate.ls
     \../components/burger.ls
+    \../seed.ls : seedmem
 }
 .wallets
     @import scheme
@@ -142,7 +143,9 @@ header = (store, web3t)->
         background: info.app.background
         background-color: info.app.bgspare
     lock = ->
-        navigate store, web3t, \locked
+        saved-seed = seedmem.saved!
+        prev-page = if saved-seed then \locked else \chooseinit
+        navigate store, web3t, prev-page
     .pug.title(style=border-style)
         .pug.header Install Wallets
         .pug.close(on-click=lock)

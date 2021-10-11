@@ -53,6 +53,7 @@ export class WalletsScreen extends BaseScreen {
       if (!await this.isWalletInWalletsList(tokenName)) continue;
 
       const amountOfTokens = await this.getAmountOfTokensFromOfWalletItemElement(walletElement);
+      if (amountOfTokens === '..') continue;
       balances[tokenName] = amountOfTokens;
     }
     log.info(balances);

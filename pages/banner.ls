@@ -5,7 +5,6 @@ require! {
     \../get-primary-info.ls
     \../get-lang.ls
     \./icon.ls
-    \./loading.ls
     \../icons.ls
 }
 .banner

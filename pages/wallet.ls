@@ -316,7 +316,7 @@ module.exports = (store, web3t, wallets, wallet)-->
         if no
             .wallet-middle.pug(style=border)
                 address-holder { store, wallet, type: \bg }
-                if token not in <[ btc vlx vlx_native vlx2 eth vlx_evm ]>
+                if token not in <[ btc vlx vlx_native vlx2 eth vlx_evm vlx_evm_legacy ]>
                     .pug.uninstall(on-click=uninstall style=wallet-style) #{label-uninstall}
             .wallet-middle.title-balance.pug(style=border)
                 .name.pug(class="#{placeholder}" title="#{usd-rate}") $#{ round-human(usd-rate)}

@@ -137,11 +137,11 @@ jobs:
       - name: blockchain health check
         run: CI=true LOG_LEVEL=info ENVIRONMENT=prod npm run blockchain-health-check
       - name: run tests testnet
-        run: CI=true LOG_LEVEL=debug ENVIRONMENT=prod npm run test-testnet
+        run: CI=true LOG_LEVEL=debug ENVIRONMENT=prod npm run test:testnet
       - name: run tests-unstable
-        run: CI=true LOG_LEVEL=info ENVIRONMENT=prod npm run test-unstable
+        run: CI=true LOG_LEVEL=info ENVIRONMENT=prod npm run test:unstable
       - name: run tests-stable
-        run: CI=true LOG_LEVEL=info ENVIRONMENT=prod npm run test-stable
+        run: CI=true LOG_LEVEL=info ENVIRONMENT=prod npm run test:stable
       - name: upload artifacts
         if: always()
         uses: actions/upload-artifact@v2

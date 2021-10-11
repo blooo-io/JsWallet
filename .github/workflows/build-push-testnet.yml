@@ -86,7 +86,7 @@ jobs:
       - name: clean previous test results
         run: rm -rf ./test-results/
       - name: run tests
-        run: CI=true LOG_LEVEL=debug ENVIRONMENT=testnet npm run test-testnet
+        run: CI=true LOG_LEVEL=debug ENVIRONMENT=testnet npm run test:testnet
       - name: upload artifacts
         if: always()
         uses: actions/upload-artifact@v2

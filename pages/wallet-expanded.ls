@@ -14,6 +14,7 @@ require! {
     \../components/button.ls
     \../components/address-holder.ls
     \./wallet-stats.ls
+    \./loading.ls
 }
 .wallet-detailed
     @import scheme
@@ -37,6 +38,8 @@ require! {
                     margin-left: 0 !important
             .wallet-swap img
                 filter: invert(1)
+        &.left
+            text-align: center
         &.left
             text-align: left
             @media screen and (max-width: $tablet)
@@ -156,23 +159,36 @@ require! {
                 width: inherit
 cb = console~log
 module.exports = (store, web3t, wallets, wallet)-->
-    return null if not wallets? or not wallet?
-    wallets-groups =
-        (wallets ? [])
-            |> filter ({coin, network}) -> ((coin.name + coin.token).to-lower-case!.index-of store.current.search.to-lower-case!) != -1 and (network.disabled isnt yes)
-            |> group-by (.network.group)
-            |> keys
-
-    group-name = wallet.network.group
-
-    { uninstall, wallet, balance, balance-usd, pending, send, receive, swap, usd-rate } = wallet-funcs store, web3t, wallets, wallet, wallets-groups, group-name
-    lang = get-lang store
     style = get-primary-info store
+    wallet-style=
+        color: style.app.text3
+    if (not wallets? or not wallet?)
+        no-result-text = 
+            font-size: "25px"
+            text-transform: "initial"
+            color: "white"
+        msg-txt-style = 
+            font-size: "20px"
+            color: "white"
+            opacity: 0.3
+        return 
+            .wallet-detailed.pug(key="no-details" style=wallet-style)
+                .wallet-part.center.pug(style=text)
+                    .wallet-header.pug
+                        .pug
+                            if store.loading-wallet is yes
+                                loading(store.loading-wallet)
+                            else
+                                h3.text-message.pug(style=msg-txt-style) No wallet found   
+                          
+
+    { uninstall, wallet, balance, balance-usd, pending, send, receive, swap, usd-rate } = wallet-funcs store, web3t, wallets, wallet
+    lang = get-lang store
+    
     label-uninstall =
         | store.current.refreshing => \...
         | _ => "#{lang.hide}"
-    wallet-style=
-        color: style.app.text3
+    
     placeholder =
         | store.current.refreshing => "placeholder"
         | _ => ""
@@ -235,7 +251,7 @@ module.exports = (store, web3t, wallets, wallet)-->
                 .wallet-header-part.right.pug
                     .pug
                         span.title.pug(class="#{placeholder}") #{name}
-                        if wallet?coin?token not in <[ btc vlx vlx_native vlx2 eth vlx_evm ]>
+                        if wallet?coin?token not in <[ btc vlx vlx_native vlx2 eth vlx_evm vlx_evm_legacy ]>
                             span.pug.uninstall(on-click=uninstall style=uninstall-style) #{label-uninstall}
                     .balance.pug(class="#{placeholder}")
                         .pug.token-balance(title="#{wallet?balance}")

@@ -35,7 +35,7 @@ plugin-pairs = {
     busd: \bnb
     vlx_erc20: \eth 
     vlx_usdc: \usdc   
-     
+    bsc_vlx: \bnb 
 }    
 required-fields = <[ type token enabled ]>
 not-in = (arr, arr2)->
