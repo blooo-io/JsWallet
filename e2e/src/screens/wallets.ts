@@ -140,14 +140,21 @@ export class WalletsScreen extends BaseScreen {
     fill: async(transactionAmount: string) => {
       await this.page.fill('div.amount-field .input-area input[label="Send"]', transactionAmount);
     },
+    whatNetwork: async(swapToToken: Currency): Promise<string> =>{
+      if (swapToToken === 'token-vlx2'){
+        return "Velas Legacy";
+      }
+      return '';
+
+    },
     chooseDestinationNetwork: async(swapToToken: Currency) => {
       let chosenNetwork = await this.page.getAttribute('.change-network', 'value');
-      let switchCount = 0;
-      while (chosenNetwork !== swapToToken.toUpperCase()){
+      const destinationNetwork = await this.swap.whatNetwork(swapToToken);
+      if (chosenNetwork !== destinationNetwork){
         await this.page.click('.network-slider .right');
         chosenNetwork = await this.page.getAttribute('.change-network', 'value');
-        switchCount++;
-        if (switchCount > 10) throw new Error(`Cannot switch to destination currency "${swapToToken}" inside swap menu`);
+        const destinationNetowkSelector = `.switch-menu div:text-matches("^ ${destinationNetwork}$")`;
+        await this.page.click(destinationNetowkSelector);
       }
     },
     confirm: async() => {
