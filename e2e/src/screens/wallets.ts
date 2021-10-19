@@ -15,6 +15,7 @@ export class WalletsScreen extends BaseScreen {
   }
 
   async getWalletAddress(): Promise<string> {
+    await this.page.waitForSelector('div.wallet-detailed a[data-original]');
     return (await this.page.getAttribute('div.wallet-detailed a[data-original]', 'data-original'))?.trim() || '';
   }
 
@@ -88,7 +89,7 @@ export class WalletsScreen extends BaseScreen {
   }
 
   async waitForWalletsDataLoaded(): Promise<void> {
-    await this.page.waitForSelector('.wallet-item .top-left [class=" img"]', { state: 'visible', timeout: 20000 });
+    await this.page.waitForSelector('.wallet-item .top-left [class=" img"]', { state: 'visible', timeout: 31000 });
     await this.page.waitForTimeout(100);
   }
 
@@ -125,9 +126,21 @@ export class WalletsScreen extends BaseScreen {
     await this.swap.confirm();
   }
 
+  private async clickSwapButton(): Promise<void> {
+    await this.page.waitForSelector('.with-swap #wallet-swap');
+    for (let i = 0; i < 5; i++) {
+      try {
+        await this.page.click('.with-swap #wallet-swap');
+      } catch {
+        log.warn(`There was attempt to click the Swap button but it's inactive. Retry in 1 sec...`);
+        await this.page.waitForTimeout(1000);
+      }
+    }
+  }
+
   private swap = {
     click: async() => {
-      await this.page.click('.with-swap #wallet-swap');
+      await this.clickSwapButton();
       await this.page.waitForSelector('.network-slider');
     },
     fill: async(transactionAmount: string) => {

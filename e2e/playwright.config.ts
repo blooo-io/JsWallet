@@ -7,7 +7,7 @@ const config: PlaywrightTestConfig = {
   globalSetup: 'src/pw-helpers/before-hook.ts',
   // globalTeardown: '',
   maxFailures: globalConfig.CI ? 10 : 2,
-  retries: process.env.CI ? 2 : 0,
+  retries: globalConfig.CI ? 2 : 0,
   timeout: 120000,
   workers: 1,
   // reporter: 'list',
@@ -19,14 +19,14 @@ const config: PlaywrightTestConfig = {
       use: {
         browserName: 'chromium',
         channel: 'chrome',
-        headless: true,
+        headless: globalConfig.CI,
         launchOptions: {
           args: ['--disable-dev-shm-usage', '--disable-gpu', '--no-sandbox', `--window-size=${windowSize.width},${windowSize.height}`, '--disable-features=TranslateUI'],
           devtools: false,
           slowMo: globalConfig.pw.slowMo,
         },
         screenshot: 'only-on-failure',
-        viewport: { width: 1900, height: 1080 },
+        viewport: { width: 1890, height: 1080 },
         video: {
           mode: 'retain-on-failure',
           size: {

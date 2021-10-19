@@ -24,9 +24,8 @@ test.describe('Staking >', () => {
     await walletsScreen.openMenu('staking');
   });
 
+  // tests in this suite depend on each other
   test.describe.serial('Actions >', () => {
-    // tests in this suite depend on each other
-
     const stakingAmount = 5;
 
     test('Previous run cleanup', async () => {
@@ -38,7 +37,6 @@ test.describe('Staking >', () => {
 
     test('Use max', async ({ page }) => {
       await stakingScreen.makeSureUiBalanceEqualsChainBalance(data.wallets.staking.staker.publicKey);
-      
       const initialWalletBalance = helpers.toFixed((await velasNative.getBalance(data.wallets.staking.staker.publicKey)).VLX);
       await page.click('" Create Account"');
       await page.click('#send-max');
@@ -56,7 +54,7 @@ test.describe('Staking >', () => {
       await page.click('" Create Account"');
       await page.fill('.input-area input', String(stakingAmount));
       await stakingScreen.confirmPrompt();
-      await page.waitForSelector('" Account created and funds deposited"', { timeout: 10000 });
+      await page.waitForSelector('" Account created and funds deposited"', { timeout: 15000 });
       await page.click('#notification-close');
 
       // for some reason new stake does not appear in the list immediately
@@ -102,7 +100,7 @@ test.describe('Staking >', () => {
 
       await stakingScreen.clickUndelegate();
       await page.click('" Confirm"');
-      await page.waitForSelector('" Funds undelegated successfully"');
+      await page.waitForSelector('" Funds undelegated successfully"', { timeout: 10000 });
       await page.click('" Ok"');
       const finalToUndelegateStakesAmount = await stakingScreen.waitForStakesAmountUpdated(initialToUndelegateStakesAmount, 'Undelegate');
       assert.equal(finalToUndelegateStakesAmount, initialToUndelegateStakesAmount - 1, 'Amount of stakes to undelegate has not changed after undelegation');
@@ -122,7 +120,7 @@ test.describe('Staking >', () => {
       await page.click('button.action-split');
       await page.fill('.input-area input', '1');
       await page.click('#prompt-confirm');
-      await page.waitForSelector('" Account created and funds are splitted successfully"');
+      await page.waitForSelector('" Account created and funds are splitted successfully"', { timeout: 20000 });
       await page.click('#notification-close')
 
       const finalAmountOfStakingAccounts = await stakingScreen.waitForStakesAmountUpdated(initialAmountOfStakingAccounts, 'Delegate');
@@ -135,7 +133,7 @@ test.describe('Staking >', () => {
       await stakingScreen.selectAccountByAddress(addedAfterSplitAccountAddress);
       await page.click('button span:text(" Withdraw")');
       await page.click('" Confirm"');
-      await page.waitForSelector('" Funds withdrawn successfully"');
+      await page.waitForSelector('" Funds withdrawn successfully"', { timeout: 10000 });
       await page.click('" Ok"');
     });
 
@@ -155,11 +153,13 @@ test.describe('Staking >', () => {
 
       await stakingScreen.makeSureStakingAccountDoesNotExist(stakeAccountAddress);
       const withdrawedStakeAccountAddress = (await stakingScreen.getStakingAccountsUpdate(stakingAccountAddresses))?.removed;
+      if (!withdrawedStakeAccountAddress) throw new Error(`Withdwed stake ${stakingAccountAddresses} does not disappear from stakes list`);
       assert.equal(withdrawedStakeAccountAddress, stakeAccountAddress);
     });
 
     test('Validators list', async ({ page }) => {
       await stakingScreen.waitForLoaded();
+      await page.waitForSelector('.validator-item .identicon', { timeout: 10000 });
       assert.isTrue(await page.isVisible('.validator-item .identicon'), 'No validator icon in validators list');
       assert.isTrue(await page.isVisible('.validator-item .browse'), 'No icon with link to explorer in validators list');
       assert.isTrue(await page.isVisible('.validator-item .copy'), 'No copy address icon in validators list');

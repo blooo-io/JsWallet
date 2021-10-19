@@ -11,6 +11,6 @@ export async function setupPage(page: Page, params?: {
   defaultNavigationTimeout?: number,
 }) {
   page.setDefaultNavigationTimeout(params?.defaultNavigationTimeout || 30000);
-  page.setDefaultTimeout(params?.defaultTimeout || 5000);
+  page.setDefaultTimeout(params?.defaultTimeout || 7000);
   // page.setViewportSize({ width: params?.viewport?.width || windowSize.width, height: params?.viewport?.height || windowSize.height });
 }

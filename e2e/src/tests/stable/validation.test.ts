@@ -21,7 +21,7 @@ test.describe('Validation >', () => {
 
   test('VLX Native: Show Invalid Address error', async ({ page }) => {
     await page.click('#wallets-send');
-    await page.type('#send-recipient', 'invalid data');
+    await page.type('#send-recipient', 'invalid');
     await page.waitForSelector('text=/(?=.*not)(?=.*valid)(?=.*address)/i');
 
     await page.fill('#send-recipient', 'BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW');

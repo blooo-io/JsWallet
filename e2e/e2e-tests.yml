@@ -56,13 +56,13 @@ jobs:
         run: rm -rf ./test-results/
 
       - name: blockchain health check
-        run: CI=true LOG_LEVEL=info npm run blockchain-health-check
+        run: CI=true npm run blockchain-health-check
 
       - name: run tests
-        run: CI=true LOG_LEVEL=info npm test
+        run: CI=true npm test
 
       - name: run tests-stable
-        run: CI=true LOG_LEVEL=info npm run test-stable
+        run: CI=true npm run test-stable
 
       # report creation will fail if testrun fails (if testrun is interrupted)
       - name: create html report from junit
