@@ -1,3 +1,4 @@
+import { helpers } from '../tools/helpers';
 import { log } from '../tools/logger';
 import { ElementHandle, Page } from '../types';
 import { BaseScreen } from './base';
@@ -154,20 +155,34 @@ export class WalletsScreen extends BaseScreen {
       await this.page.fill('div.amount-field .input-area input[label="Send"]', transactionAmount);
     },
     whatNetwork: async(swapToToken: Currency): Promise<string> =>{
-      if (swapToToken === 'token-vlx2'){
-        return "Velas Legacy";
+      switch(swapToToken){
+      case 'token-vlx2': 
+        return 'Velas Legacy';
+      case 'token-vlx_native':
+        return 'Velas Native';
+      case 'token-vlx_evm':
+        return 'Velas Evm';
+      case 'token-bsc_vlx':
+        return 'Binance Smart Chain (VLX BEP20)';
+      case 'token-vlx_huobi':
+        return 'Huobi ECO Chain (VLX HRC20)';
+      case 'token-vlx_erc20':
+        return 'Ethereum (VLX ERC20)';        
+      default: return 'default'
       }
-      return '';
-
     },
     chooseDestinationNetwork: async(swapToToken: Currency) => {
-      let chosenNetwork = await this.page.getAttribute('.change-network', 'value');
       const destinationNetwork = await this.swap.whatNetwork(swapToToken);
+      if (destinationNetwork === 'default'){
+        return
+      }
+      let chosenNetwork = await this.page.getAttribute('.change-network', 'value');
       if (chosenNetwork !== destinationNetwork){
         await this.page.click('.network-slider .right');
         chosenNetwork = await this.page.getAttribute('.change-network', 'value');
         const destinationNetowkSelector = `.switch-menu div:text-matches("^ ${destinationNetwork}$")`;
         await this.page.click(destinationNetowkSelector);
+        await this.waitForSelectorDisappears('.switch-menu', {timeout: 5000});
       }
     },
     confirm: async() => {

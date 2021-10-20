@@ -25,7 +25,6 @@ test.describe('Swap: ', () => {
 
   test('VLX Legacy > VLX Native', async ({ page }) => {
     // TODO
-    test.skip();
 
     const vlxSenderInitialBalance = (await walletsScreen.getWalletsBalances())['token-vlx2'];
     const nativeReceiverInitialBalance = await velasNative.getBalance(data.wallets.swap.address);
@@ -55,7 +54,6 @@ test.describe('Swap: ', () => {
 
   test('VLX Native > VLX Legacy', async ({ page }) => {
     // TODO
-    test.skip();
 
     const nativeSenderInitialBalance = await velasNative.getBalance(data.wallets.swap.address);
     const vlxReceiverInitialBalance = (await walletsScreen.getWalletsBalances())['token-vlx2'];
@@ -98,7 +96,6 @@ test.describe('Swap: ', () => {
   });
 
   test('EVM > Native', async ({ page }) => {
-    test.skip();
     await walletsScreen.swapTokens('token-vlx_evm', 'token-vlx_native', 0.0001);
 
     const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
@@ -108,7 +105,6 @@ test.describe('Swap: ', () => {
   });
 
   test('Native > EVM', async ({ page }) => {
-    test.skip();
     await walletsScreen.swapTokens('token-vlx_native', 'token-vlx_evm', 0.0001);
 
     const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
