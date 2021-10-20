@@ -85,15 +85,16 @@ query-pools = ({store, web3t, on-progress}, on-finish) ->
     on-finish null, pools
 fill-delegators = (store, web3t)->
     accounts = store.staking.parsedProgramAccounts
-    fill-delegator(store, web3t, accounts)
-fill-delegator = (store, web3t, [acc, ...accounts])!->
+    Array.from(accounts, fill-delegator(store, web3t))
+
+fill-delegator = (store, web3t, acc)-->
     return if not acc?
     voter             =        acc.account?data?parsed?info?stake?delegation?voter
     activationEpoch   = Number(acc.account?data?parsed?info?stake?delegation?activationEpoch  ? 0)
     deactivationEpoch = Number(acc.account?data?parsed?info?stake?delegation?deactivationEpoch ? 0)
     if (voter and (deactivationEpoch > activationEpoch or activationEpoch is web3t.velas.NativeStaking.max_epoch))  
         store.staking.delegators[voter] = if store.staking.delegators[voter]? then (store.staking.delegators[voter] + 1) else 1
-    fill-delegator(store, web3t, accounts)
+
 # Accounts
 query-accounts = (store, web3t, on-progress, on-finish) ->
     accountIndex = store.current.accountIndex

@@ -39,7 +39,7 @@ export abstract class BaseScreen {
 
     // wait for wallets data loaded
     if (menuItemName === 'wallets') {
-      await this.page.waitForSelector('.wallet-item .top-left [class=" img"]', { state: 'visible' });
+      await this.page.waitForSelector('.wallet-item .top-left [class=" img"]', { state: 'visible', timeout: 31000 });
     }
   }
 

@@ -50,6 +50,7 @@ test.describe('Navigation >', () => {
           break;
 
         case 'swap':
+          await page.waitForSelector('.with-swap #wallet-swap', { timeout: 20000, state: 'visible' });
           await page.click('.with-swap #wallet-swap');
           await page.waitForSelector('.network-slider');
           break;

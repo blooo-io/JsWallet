@@ -5,13 +5,13 @@ const environment: Environment = 'local';
 type Network = 'testnet' | 'mainnet';
 
 export const config = {
-  CI: process.env.CI === 'false',
+  CI: process.env.CI === 'true',
   defaultWaitTimeout: Number(process.env.DEFAULT_WAIT_TIMEOUT) || 6000,
   environment: process.env.ENVIRONMENT as Environment || environment,
-  logLevel: process.env.LOG_LEVEL || 'info',
+  logLevel: process.env.LOG_LEVEL || 'debug',
   network: process.env.NETWORK || 'testnet',
   pw: {
-    slowMo: 200,
+    slowMo: 250,
   },
 };
 

@@ -29,7 +29,7 @@ export class StakingScreen extends BaseScreen {
     } catch (e) {
       log.debug('No loading after opening staking. Looks like it\'s already fully loaded.');
     }
-    await this.page.waitForSelector('.validator-item', { timeout: 13000 });
+    await this.page.waitForSelector('.validator-item', { timeout: 26000 });
 
     // wait staking account item or make sure there are no accounts
     await this.page.waitForSelector(`${this.stakingAccountAddress}, #staking-accounts .amount:text(" (0) ")`);
@@ -38,11 +38,17 @@ export class StakingScreen extends BaseScreen {
 
   async waitForStakesAmountUpdated(initialStakesAmount: number, stakeType: Stake | 'all' = 'all'): Promise<number> {
     let finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);
+    let timer = 0;
+    const waitTime = 4000;
     while (finalAmountOfStakingAccounts === initialStakesAmount) {
       log.warn('Amount of stake accounts still the same. Wait and refresh the staking data...');
-      await this.page.waitForTimeout(4000);
+      await this.page.waitForTimeout(waitTime);
       await this.refresh();
       finalAmountOfStakingAccounts = await this.getAmountOfStakes(stakeType);
+      timer += waitTime;
+      if (waitTime >= 30000) {
+        throw new Error(`You expected "${stakeType}" stakes amount to be changed. But no changes during 30 sec. Initial and final "${stakeType}" stakes amount: ${initialStakesAmount}.`);
+      }
     }
     return finalAmountOfStakingAccounts;
   }
@@ -147,6 +153,12 @@ export class StakingScreen extends BaseScreen {
   } | null> {
     finalAccountsAddressesList = finalAccountsAddressesList || await this.getStakingAccountsAddresses();
     const diff = helpers.getArraysDiff(initialAccountsAddressesList, finalAccountsAddressesList);
+    log.debug(`This is log of getStakingAccountsUpdate function
+    initialAccountsAddressesList:
+    ${initialAccountsAddressesList};
+    finalAccountsAddressesList:
+    ${finalAccountsAddressesList};
+    diff: ${diff}`);
     if (diff.length === 0) return null;
     return finalAccountsAddressesList.length > initialAccountsAddressesList.length ? { added: diff[0] } : { removed: diff[0] };
   }
@@ -210,7 +222,8 @@ export class StakingScreen extends BaseScreen {
   stakingCleanup = {
     stakesToUndelegate: async () => {
       let toUndelegateStakesAmount = await this.getAmountOfStakes('Undelegate');
-      while(toUndelegateStakesAmount > 0){
+      while (toUndelegateStakesAmount > 0) {
+        log.debug(`There are ${toUndelegateStakesAmount} delegated stakes to be undelegate as precondition`);
         await this.clickUndelegate();
         await this.page.click('" Confirm"');
         await this.page.waitForSelector('" Funds undelegated successfully"');
@@ -221,7 +234,8 @@ export class StakingScreen extends BaseScreen {
     },
     stakesToWithdraw: async () => {
       let toWithdrawStakesAmount = await this.getAmountOfStakes('Withdraw');
-      while(toWithdrawStakesAmount > 0){
+      while (toWithdrawStakesAmount > 0) {
+        log.debug(`There are ${toWithdrawStakesAmount} stakes to be withdrawn as precondition`);
         await this.clickWithdraw();
         await this.page.click('" Confirm"');
         await this.page.waitForSelector('" Funds withdrawn successfully"');
@@ -232,7 +246,8 @@ export class StakingScreen extends BaseScreen {
     },
     stakesNotDelegated: async () => {
       let notDelegatedStakesAmount = await this.getAmountOfStakes('Delegate');
-      while(notDelegatedStakesAmount > 0){
+      while (notDelegatedStakesAmount > 0) {
+        log.debug(`There are ${notDelegatedStakesAmount} not delegated stakes to be withdrawn as precondition`);
         await this.selectAccount('Delegate');
         await this.page.click('button span:text(" Withdraw")');
         await this.page.click('" Confirm"');
@@ -243,11 +258,11 @@ export class StakingScreen extends BaseScreen {
       }
     },
   }
-  
+
   async makeSureUiBalanceEqualsChainBalance(address: string): Promise<void> {
     const initialWalletBalance = helpers.toFixed((await velasNative.getBalance(address)).VLX);
     let uiBalance = await (await this.page.innerText('.section .description span')).replace('VLX', '').trim();
-    while(initialWalletBalance !== helpers.toFixed(Number(uiBalance))){
+    while (initialWalletBalance !== helpers.toFixed(Number(uiBalance))) {
       await this.refresh();
       uiBalance = await (await this.page.innerText('.section .description span')).replace('VLX', '').trim();
       log.debug('Balance on UI is not the same as on blockchain, refreshing...');
