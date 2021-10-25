@@ -1,6 +1,6 @@
 export const data = {
   walletURLs: {
-    local: 'localhost:8080/main-index.html',
+    local: '127.0.0.1:8080/main-index.html',
     devnet: '',
     testnet: 'https://wallet.testnet.velas.com/',
     prod: 'https://wallet.velas.com/',
