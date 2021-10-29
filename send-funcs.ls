@@ -30,6 +30,7 @@ require! {
     \bs58
     \assert   
     \./velas/velas-web3.ls
+    \./icons.ls    
 }
 
 
@@ -95,6 +96,10 @@ module.exports = (store, web3t)->
             return cb err   
         err <- create-pending-tx { store, token, recipient, network, tx, amount-send, amount-send-fee, send.to, from: wallet.address }
         cb err, tx
+        
+    wallet-icon = 
+        | wallet.coin?custom is yes and icons.customWalletIcon? => icons.customWalletIcon
+        | _ => wallet.coin.image 
         
     perform-send-safe = (cb)->
         err, to <- resolve-address { store, address: send.to, coin: send.coin, network: send.network }
@@ -390,7 +395,16 @@ module.exports = (store, web3t)->
         allowed = allowedRaw `div` (10 ^ 0) 
 
         { network } = wallet   
-        contract = web3.eth.contract(abis.ForeignBridgeErcToErc).at(FOREIGN_BRIDGE)  
+        
+        contract = web3.eth.contract(abis.ForeignBridgeErcToErc).at(FOREIGN_BRIDGE)
+        data = 
+            | up(wallet.address) is up(store.current.send.to) => contract.transfer.get-data(FOREIGN_BRIDGE, value)
+            | _ => contract.relayTokens.get-data(receiver, value)
+        contract-address =
+           | up(wallet.address) is up(store.current.send.to) => FOREIGN_BRIDGE_TOKEN
+           | _ => FOREIGN_BRIDGE    
+        store.current.send.contract-address = contract-address
+        store.current.send.data = data     
      
         minPerTxRaw = contract.minPerTx!  
         minPerTx = minPerTxRaw `div` (10 ^ 6)  
@@ -403,20 +417,8 @@ module.exports = (store, web3t)->
             
         /* Check for allowed amount for contract */    
         err <- check-allowed-amount { contract, wallet, amount: send.amountSend, allowed, bridge: FOREIGN_BRIDGE, bridgeToken: FOREIGN_BRIDGE_TOKEN }       
-        return cb err if err? 
+        return cb err if err?               
         
-        current-network = store.current.network    
-        
-        data = 
-            | is-self-send is yes => contract.transfer.get-data(FOREIGN_BRIDGE, value)
-            | _ => contract.relayTokens.get-data(receiver, value)
-       
-        contract-address =
-           | is-self-send is yes => FOREIGN_BRIDGE_TOKEN
-           | _ => FOREIGN_BRIDGE    
-        
-        store.current.send.contract-address = contract-address
-        store.current.send.data = data   
         cb null, data 
         
     
@@ -455,7 +457,8 @@ module.exports = (store, web3t)->
             
         cb null, data        
         
-    execute-contract-data = (cb)->
+    execute-contract-data = ( { store }, cb)->
+        console.log "[execute-contract-data]"    
         return cb null if not store.current.send.chosen-network?
         chosen-network = store.current.send.chosen-network
         token = store.current.send.coin.token
@@ -724,6 +727,8 @@ module.exports = (store, web3t)->
         /* Swap from VLX ERC20 to COIN VLX */    
         if token is \vlx_erc20 and chosen-network.id in <[ vlx_evm vlx2 ]>
             value = store.current.send.amountSend
+            value2 = to-hex(value `times` (10^18)).toString(16)
+            console.log "value2" value2  
             value = (value `times` (10^18))
             network = wallet.network
 
@@ -741,24 +746,19 @@ module.exports = (store, web3t)->
             maxPerTxRaw = contract.maxAvailablePerTx!
             maxPerTx = maxPerTxRaw `div` (10 ^ network.decimals)
             
-            #homeFeeRaw = contract.getHomeFee!
-            #homeFee = homeFeeRaw `div` (10 ^ network.decimals)
-            #contract-home-fee = send.amountSend `times` homeFee
-            
-            if +send.amountSend < +(minPerTx) then
-                return cb "Min amount per transaction is #{minPerTx} VLX"
-            if +send.amountSend > +maxPerTx then
-                return cb "Max amount per transaction is #{maxPerTx} VLX"
-                           
             sending-to = 
                 | send.to.starts-with \V => to-eth-address send.to
                 | _ => send.to
 
             contract = web3.eth.contract(abis.ERC20BridgeToken).at(FOREIGN_BRIDGE_TOKEN)
             data = contract.transferAndCall.get-data(FOREIGN_BRIDGE, value, sending-to)
-            
             send.data = data
-            send.contract-address = FOREIGN_BRIDGE_TOKEN
+            send.contract-address = FOREIGN_BRIDGE_TOKEN         
+            
+            if +send.amountSend < +(minPerTx) then
+                return cb "Min amount per transaction is #{minPerTx} VLX"
+            if +send.amountSend > +maxPerTx then
+                return cb "Max amount per transaction is #{maxPerTx} VLX"
             
         
         /* DONE */    
@@ -815,7 +815,7 @@ module.exports = (store, web3t)->
     before-send-anyway = ->
         cb = console.log    
         (document.query-selector \.textfield).blur!
-        err <- execute-contract-data!
+        err <- execute-contract-data { store }    
         if err?    
             error = err.toString()
             if error.to-lower-case!.index-of("canceled") isnt -1
@@ -830,12 +830,13 @@ module.exports = (store, web3t)->
         navigate store, web3t, \wallets
         notify-form-result send.id, "Cancelled by user"
     recipient-change = (event)!->
-        _to = event.target.value
+        _to = (event.target.value ? "").trim! 
         send.to = _to    
-        _to = _to.trim!
         err <- resolve-address { store, address: _to, coin: send.coin, network: send.network }
         return send.error = err if err? 
-        send.error = '' 
+        send.error = ''
+        err <- amount-change { target: { value: store.current.send.amountSend }}
+        #err <- calc-fee { token, send.network, amount: amount-send, send.fee-type, send.tx-type, send.to, send.data, account } 
     get-value = (event)-> 
         value = event.target?value     
         return null if not event.target?value      
@@ -901,7 +902,14 @@ module.exports = (store, web3t)->
         navigate store, web3t, \invoice
     export token = send.coin.token.to-upper-case!
     export name = send.coin.name ? token
-    fee-token = (wallet.network.tx-fee-in ? send.coin.token).to-upper-case!
+    { wallets } = store.current.account
+    fee-wallet = 
+        | wallet.network.tx-fee-in? =>
+            wallets |> find (-> it.coin.token is wallet.network.tx-fee-in)
+        | _ => wallet
+    fee-wallet = fee-wallet ? wallet
+    fee-token = fee-wallet?coin?nickname ? ""
+    
     is-data = (send.data ? "").length > 0
     bridge-fee-token = wallet.network.txBridgeFeeIn
     choose-auto = ->
@@ -1126,4 +1134,5 @@ module.exports = (store, web3t)->
     export calc-amount-and-fee
     export is-data
     export encode-decode
+    export wallet-icon    
     out$

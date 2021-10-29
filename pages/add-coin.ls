@@ -8,6 +8,9 @@ require! {
     \./icon.ls
     \../icons.ls
     \../../web3t/providers/superagent.ls : { get }
+    \../components/button.ls
+    \./custom-token.ls : \CustomToken
+    \../components/popups/loader.ls    
 }
 .manage-account
     @import scheme
@@ -21,14 +24,17 @@ require! {
     position: fixed 
     width: 100%
     top: 0
-    bottom: 0    
+    bottom: 0  
+    left: 0
+    right: 0  
     z-index: 999
     padding-top: 5%
     box-sizing: border-box
     padding: 10px
     background: rgba(black, 0.08)
     backdrop-filter: blur(5px)
-    height: 100vh
+    display: flex
+    align-items: center
     >.account-body
         max-width: 600px
         display: inline-block
@@ -36,24 +42,31 @@ require! {
         animation-name: bounceIn
         background: white
         width: 100%
-        margin-top: 5vh
-        margin-bottom: 25vh
+        margin: auto
         border-radius: var(--border-btn)
         position: relative
-        height: 65vh
+        max-height: 600px    
         overflow: hidden
         box-shadow: 17px 10px 13px #0000001f, -6px 10px 13px #00000024
+        padding-bottom: 20px
+        @media (max-width: 580px)
+            margin-top: 0
+            margin-bottom: 0
+            height: auto    
+        .content-manage
+            display: flex
+            flex-direction: row  
+        .add-custom-token
+            float: right  
         >.title
             background-color: var(--bgspare)
-            position: absolute
-            z-index: 999
-            top: 0
             box-sizing: border-box
-            width: 100%
-            height: 100px
-            color: gray
             font-size: 22px
             padding: 10px
+            margin-top: 20px
+            margin: 15px
+            > div
+                margin-bottom: 20px  
             .closed
                 position: absolute
                 padding: 10px 20px
@@ -63,35 +76,46 @@ require! {
                 cursor: pointer
                 &:hover
                     color: #CCC
-            .search-content
-                position: relative
-                padding: 0 10px
+        .add-custom-token
+            @media (max-width: 580px)
+                width: 100% 
+            button    
+                margin-right: 0      
+        .search-content
+            position: relative
+            width: calc(50% - 5px)
+            float: left
+            text-align: left
+            @media (max-width: 580px)
+                width: 100%    
+                padding: 0
+            .search
+                margin-top: 7px
+                border: 1px solid #CCC
+                padding: 9px
+                border-radius: var(--border-btn)
+                width: 100%
+                padding-left: 35px
+                box-sizing: border-box
+                font-size: 13px
+                outline: none
+            .icon
+                top: 4px
+                left: 11px
+                position: absolute
                 @media (max-width: 580px)
-                    padding: 0
-                .search
-                    margin-top: 10px
-                    border: 1px solid #CCC
-                    padding: 9px
-                    border-radius: var(--border-btn)
-                    width: 100%
-                    padding-left: 35px
-                    box-sizing: border-box
-                    font-size: 13px
-                    outline: none
-                .icon
-                    top: 6px
-                    left: 20px
-                    position: absolute
-                    @media (max-width: 580px)
-                        left: 10px
+                    left: 10px
         >.settings
-            padding-top: 90px
-            padding-bottom: 90px
-            height: calc(65vh - 180px)
+            display: inline-block    
+            height: 480px   
             overflow-y: scroll
+            margin-top: 0
+            width: 100%
+            border-top: 1px solid rgba(255, 255, 255,  0.05)
             .section
                 position: relative
                 min-height: 200px
+                background: rgba(84, 102, 96,  0.03)
                 .legacy-tokens.title
                     margin-top: 20px
                     opacity: 0.2
@@ -105,16 +129,26 @@ require! {
                         padding: 10px 0
                     .wallet-group
                         width: 100%   
-                        text-align: left 
+                        text-align: left
+                        margin-bottom: 10px
+                        .network-wallets
+                            display: flex
+                            flex-wrap: wrap 
                         .group-name
                             text-align: left
                             padding: 5px 12px 5px 10px
                             color: #7f818a
                             text-transform: uppercase
                             font-size: 12px
+                            top: -1px !important   
+                        .outer-item 
+                            width: 50%  
+                            text-align: center 
+                            @media (max-width: 580px)
+                                width: 100%    
                         .item
-                            width: calc(49% - 10px)
-                            margin: 5px 5px 10px
+                            width: calc(100% - 10px)
+                            margin-bottom: 10px    
                             display: inline-block
                             background: #642dbd
                             border-radius: var(--border-btn)
@@ -125,7 +159,6 @@ require! {
                                 width: 100%
                                 float: none
                             &:nth-child(odd)
-                                margin-right: 10px
                                 @media (max-width: 580px)
                                     margin-right: 0
                             >*
@@ -185,11 +218,12 @@ create-item = ({ store, web3t }, item)-->
         background: style.app.input
     menu-style=
         color: style.app.text
-    .item.pug(style=background, id="add-token-#{title}")
-        img.pug(src="#{item.image}")
-        span.pug.title(style=menu-style) #{title}
-        button.pug(on-click=add style=button-style)
-            icon \Plus, 20
+    .pug.outer-item
+        .item.pug(style=background, id="add-token-#{title}")
+            img.pug(src="#{item.image}")
+            span.pug.title(style=menu-style) #{title}
+            button.pug(on-click=add style=button-style)
+                icon \Plus, 20
 filter-item = (store)-> (item)->
     return yes if (store.current.filter-plugins ? "").length is 0
     (item.token ? "").index-of(store.current.filter-plugins) > -1
@@ -258,6 +292,7 @@ module.exports = ({ store, web3t } )->
     current-network = store.current.network   
     close = ->
         store.current.add-coin = no
+        store.custom-token.add = no 
     filter-registery = (event)->
         store.current.filter-plugins = event.target.value
     style = get-primary-info store
@@ -265,6 +300,14 @@ module.exports = ({ store, web3t } )->
         background: style.app.background
         background-color: style.app.bgspare
         color: style.app.text
+        transition: "height .5s"
+    account-body-style-custom =
+        background: style.app.background
+        background-color: style.app.bgspare
+        color: style.app.text
+        transition: "height .5s"
+        height: "550px"
+        max-height: "550px"    
     color =
         color: style.app.text
     lang = get-lang store
@@ -272,6 +315,7 @@ module.exports = ({ store, web3t } )->
         color: style.app.text
         background: style.app.input
         border: "0"
+        width: "calc(100%) - 100"    
 
     plugins = store.registry
           
@@ -297,31 +341,67 @@ module.exports = ({ store, web3t } )->
         wallets = item.1
         
         .wallet-group.pug(id="wallet-group-add-#{group-name}")
-            .pug.group-name #{group-name} Network         
-            wallets |> map create-item { store, web3t }  
+            .pug.group-name #{group-name} Network
+            .pug.network-wallets
+                .pug         
+                    wallets |> map create-item { store, web3t }  
     
+    add-custom-token = ->
+        store.custom-token.add = yes
+        store.custom-token.network = null  
+        store.custom-token.contract-address = ""
+        store.custom-token.symbol = ""
+        store.custom-token.decimals = 0 
+        store.custom-token.errors.contract-address = ""
+        store.custom-token.errors.symbol = ""
+        store.custom-token.errors.decimals = ""
+        store.custom-token.errors.network = ""  
+    button-style =
+        border: "1px solid #{style.app.text}"
+        color: style.app.text 
+    title-style = 
+        font-weight: "bold"
+        opacity: ".9"    
+ 
+    go-back-from-custom-token = ->
+        store.custom-token.add = no   
     
     .pug.manage-account
-        .account-body.pug(style=account-body-style)
-            .pug.title(style=color)
-                .pug
-                    .pug #{lang.your-wallets}
-                    .pug.closed(on-click=close)
-                        icon \X, 20
-                .pug.search-content
-                    input.search.pug(placeholder="#{lang.search}" on-change=filter-registery style=input-style)
-                    .pug.icon
-                        icon \Search, 15
-            .pug.settings
-                if store.registry.length > 0
-                    .pug.section
-                        .list.pug
-                            if velas-group? 
-                                velas-group
+        if not store.custom-token.add    
+            .account-body.pug(style=account-body-style)
+                .pug.title(style=color)
+                    .pug
+                        .pug(style=title-style) #{lang.your-wallets}
+                        .pug.closed(on-click=close)
+                            icon \X, 20
+                    .pug.search-content
+                        .pug.jhjj    
+                            input.search.pug(placeholder="#{lang.search}" on-change=filter-registery style=input-style)
+                            .pug.icon
+                                icon \Search, 15
+                        
+                    .pug.add-custom-token
+                        button { store, on-click=add-custom-token, text: "Add custom token" , icon: \plus , type: \secondary, id: "add-custom-token", makeDisabled=no }                 
+                                 
+                .pug.settings
+                    if store.registry.length > 0
+                        .pug.section
+                            .list.pug
+                                if velas-group? 
+                                    velas-group
+                                        |> obj-to-pairs
+                                        |> map create-group { store, web3t }
+                                groups
                                     |> obj-to-pairs
                                     |> map create-group { store, web3t }
-                            groups
-                                |> obj-to-pairs
-                                |> map create-group { store, web3t }
-
-                
+    
+                    
+        else
+            .account-body.pug(style=account-body-style-custom)
+                loader { loading: store.custom-token.isLoading }
+                .pug.title(style=color)
+                    .pug
+                        .pug(style=title-style) Add custom token   
+                        .pug.closed(on-click=close)
+                            icon \X, 20
+                CustomToken { store, web3t }  

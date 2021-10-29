@@ -71,7 +71,6 @@ require! {
         .cancel
             color: #c25b5f
         .name
-            text-overflow: ellipsis
             white-space: nowrap
             overflow: hidden
             width: 90px
@@ -79,6 +78,14 @@ require! {
             cursor: default
             display: contents
             vertical-align: middle
+            display: inline-block
+            overflow-x: auto
+            background: var(--background)
+            &:hover
+                width: auto
+                max-width: 330px
+                padding: 3px
+                
         input
             outline: none
             width: 70px

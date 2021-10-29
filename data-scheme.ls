@@ -67,6 +67,7 @@ store =
     terms: "Loading..."
     terms2: "Loading..."
     collapse: ""
+    just-added-token: null    
     development:
         proposals: []
         new-proposal:
@@ -75,6 +76,23 @@ store =
             opened: no
             progress: \0
             update-progress: null
+    custom-token:
+        add: no
+        isLoading: no   
+        contract-address: ""
+        decimals: 0
+        symbol: ""
+        symbol-display: ""
+        network: null
+        selected-network: network 
+        switch-network: false   
+        edit-symbol: no 
+        icon: "" 
+        errors:
+            contract-address: ""
+            network: ""  
+            decimals: ""
+            symbol: ""    
     preference:
         settings-visible: yes
         invoice-visible: yes

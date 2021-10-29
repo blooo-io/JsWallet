@@ -133,7 +133,6 @@ require! {
                     margin-left: 0
                     display: block
     .manage-account
-        margin-left: -250px
         @media (max-width: $ipad)
             margin-left: 0
     .content

@@ -28,6 +28,7 @@ require! {
     \../swaping/networks.ls : \token-networks
     "../../web3t/contracts/HomeBridgeNativeToErc.json" : \HomeBridgeNativeToErc    
     "../../web3t/contracts/ForeignBridgeNativeToErc.json" : \ForeignBridgeNativeToErc
+    \../contract-data.ls
 }
 .content
     position: relative
@@ -319,6 +320,8 @@ require! {
                 &.center
                     padding-left: 10px
                     text-align: center
+                    overflow: hidden
+                    text-overflow: ellipsis
                 &.left
                     width: 10%
                     text-align: center
@@ -419,7 +422,7 @@ form-group = (classes, title, style, content)->
         label.pug.control-label(style=style) #{title}
         content!
 send = ({ store, web3t })->
-    { execute-contract-data, getBridgeInfo, token, name, homeFee, homeFeeUsd, fee-token, bridge-fee-token, network, send, wallet, pending, recipient-change, amount-change, amount-usd-change, amount-eur-change, use-max-amount, show-data, show-label, history, cancel, send-anyway, before-send-anyway, choose-auto, round5edit, round5, is-data, encode-decode, change-amount, invoice } = send-funcs store, web3t
+    { wallet-icon, execute-contract-data, getBridgeInfo, token, name, homeFee, homeFeeUsd, fee-token, bridge-fee-token, network, send, wallet, pending, recipient-change, amount-change, amount-usd-change, amount-eur-change, use-max-amount, show-data, show-label, history, cancel, send-anyway, before-send-anyway, choose-auto, round5edit, round5, is-data, encode-decode, change-amount, invoice } = send-funcs store, web3t
     return send-contract { store, web3t } if send.details is no
     theme = get-primary-info(store)
     send.sending = false
@@ -436,6 +439,12 @@ send = ({ store, web3t })->
         background: style.app.input
         border: "1px solid #{style.app.border}"
         color: style.app.text
+        user-select: "text"
+    input-custom-style=
+        background: style.app.input
+        border: "1px solid #{style.app.border}"
+        color: style.app.text
+        width: "100%"
     border-style=
         border: "1px solid #{style.app.border}"
     amount-style=
@@ -486,14 +495,12 @@ send = ({ store, web3t })->
     active-eur = active-class \eur
     show-class =
         if store.current.open-menu then \hide else \ ""
-    token-display = (wallet.coin.nickname ? "").to-upper-case!
-    fee-token-display = 
-        | fee-token in <[ VLX2 VLX_EVM VLX_NATIVE VLX_EVM_LEGACY ]> => \VLX
-        | fee-token in <[ ETH_LEGACY ]> => \ETH
-        | bridge-fee-token? => bridge-fee-token
-        | wallet.network.tx-fee-in? => wallet.network.tx-fee-in
-        | _ => fee-token
-    fee-token-display = fee-token-display.to-upper-case!
+    is-custom = wallet?coin?custom is yes 
+    token-display = 
+        | is-custom is yes => (wallet.coin.name ? "").to-upper-case!
+        | _ => (wallet.coin.nickname ? "").to-upper-case!
+       
+    fee-token-display = fee-token.to-upper-case!
     fee-coin-image = 
         | send.fee-coin-image? => send.fee-coin-image
         |_ => send.coin.image
@@ -528,12 +535,15 @@ send = ({ store, web3t })->
         if err?
             store.current.send.error = err 
             return cb err     
-        err <- execute-contract-data!
+        err <- execute-contract-data { store }
         if err?
             store.current.send.error = err
             return cb err 
         cb null
-       
+     
+    input-wrapper-style = 
+        | is-custom is yes => input-custom-style
+        | _ => input-style   
     
     /* Render */
     .pug.content
@@ -548,7 +558,7 @@ send = ({ store, web3t })->
             if store.current.device isnt \mobile
                 .pug.header
                     span.head.pug.left
-                        img.pug(src="#{send.coin.image}")
+                        img.pug(src="#{wallet-icon}")
                     span.pug.head.center(style=more-text) #{wallet-title}
                     if store.current.device is \mobile
                         span.pug.head.right(on-click=history style=icon-style)
@@ -581,13 +591,14 @@ send = ({ store, web3t })->
                 form-group \send-amount, lang.amount, icon-style, ->
                     .pug
                         .pug.amount-field
-                            .input-wrapper.pug(style=input-style)
+                            .input-wrapper.pug(style=input-wrapper-style)
                                 .label.crypto.pug
-                                    img.label-coin.pug(src="#{send.coin.image}")
+                                    img.label-coin.pug(src="#{wallet-icon}")
                                     | #{token-display}
                                 amount-field { store, value: send.amount-send, on-change: amount-change, placeholder="0", id="send-amount", token, disabled }
                             if active-usd is \active
-                                amount-fiat-field { store, on-change:amount-usd-change, placeholder:"0", title:"#{send.amount-send-usd}" value:"#{send.amount-send-usd}", id:"send-amount-usd", disabled: no }
+                                if not is-custom
+                                    amount-fiat-field { store, on-change:amount-usd-change, placeholder:"0", title:"#{send.amount-send-usd}" value:"#{send.amount-send-usd}", id:"send-amount-usd", disabled: no }
                             if active-eur is \active
                                 .input-wrapper.small.pug(style=amount-style)
                                     .label.lusd.pug €
@@ -597,7 +608,7 @@ send = ({ store, web3t })->
                             span.pug #{lang.balance}
                             span.pug.balance
                                 span.pug(title="#{wallet.balance}") #{round-human wallet.balance}
-                                    img.label-coin.pug(src="#{send.coin.image}")
+                                    img.label-coin.pug(src="#{wallet-icon}")
                                     span.pug #{token-display}
                                 if +wallet.pending-sent >0 and no
                                     span.pug.pending #{'(' + pending + ' ' + lang.pending + ')'}
@@ -605,16 +616,17 @@ send = ({ store, web3t })->
                 if is-data
                     form-group \contract-data, 'Data', icon-style, ->
                         .pug.smart-contract(style=input-style) #{show-data!}
-                trx-fee { store, web3t, wallet }
+                trx-fee { store, web3t, wallet, fee-token }
                 table.pug(style=border-style)
                     tbody.pug
                         tr.pug
                             td.pug #{lang.you-spend}
                             td.pug
                                 span.pug(title="#{send.amount-charged}") #{round-human(send.amount-charged)}
-                                    img.label-coin.pug(src="#{send.coin.image}")
+                                    img.label-coin.pug(src="#{wallet-icon}")
                                     span.pug(title="#{send.amount-charged}") #{token-display}
-                                .pug.usd $ #{round-human send.amount-charged-usd}
+                                if not is-custom
+                                    .pug.usd $ #{round-human send.amount-charged-usd}
                         tr.pug.orange
                             td.pug #{lang.fee}
                             td.pug
@@ -643,6 +655,7 @@ send = ({ store, web3t })->
 
 module.exports = send
 module.exports.init = ({ store, web3t }, cb)->
+    return cb null if not store? or not web3t? 
     { execute-contract-data, wallet, getBridgeInfo } = send-funcs store, web3t
     return cb null if not wallet?
     return cb null if send.sending is yes
@@ -654,14 +667,14 @@ module.exports.init = ({ store, web3t }, cb)->
     if store.current.send.is-swap isnt yes
         store.current.send.contract-address = null
     is-swap-contract = contracts.is-swap-contract(store, send.to)
-    if is-swap-contract then
-        contract-address = if wallet.coin.token is \vlx2 then web3t.velas.HomeBridgeNativeToErc.address else web3t.velas.ForeignBridgeNativeToErc.address 
-        store.current.send.to = contract-address
-        network-type = store.current.network
-        networks = wallet.coin["#{network-type}s"]
-        store.current.send.networks = networks
-        network-keys = networks |> keys
-        default-network = networks[network-keys.0].name
+#    if is-swap-contract then
+#        contract-address = if wallet.coin.token is \vlx2 then web3t.velas.HomeBridgeNativeToErc.address else web3t.velas.ForeignBridgeNativeToErc.address 
+#        store.current.send.to = contract-address
+#        network-type = store.current.network
+#        networks = wallet.coin["#{network-type}s"]
+#        store.current.send.networks = networks
+#        network-keys = networks |> keys
+#        default-network = networks[network-keys.0].name
     /* If it is Swap! */
     if wallet.network.networks? and (store.current.send.isSwap is yes) then
         $wallets = store.current.account.wallets |> map (-> [it.coin.token, it]) |> pairs-to-obj
@@ -679,14 +692,12 @@ module.exports.init = ({ store, web3t }, cb)->
         else
             console.error "networks prop in #{store.current.send.token} wallet is defined but is empty" 
     
-    #err <- execute-contract-data
-    #console.log "err " err
+    err <- contract-data({store}).form-contract-data!
+    console.log "form-contract-data err: " err if err?
     #return cb err if err?
-    #try
+    
     err <- getBridgeInfo!
     return cb err if err?
-    #catch err
-        #console.error err
     
     { wallets } = wallets-funcs store, web3t
     current-wallet =

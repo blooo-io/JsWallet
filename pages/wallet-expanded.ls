@@ -15,6 +15,7 @@ require! {
     \../components/address-holder.ls
     \./wallet-stats.ls
     \./loading.ls
+    \./confirmation.ls : { confirm }
 }
 .wallet-detailed
     @import scheme
@@ -182,7 +183,7 @@ module.exports = (store, web3t, wallets, wallet)-->
                                 h3.text-message.pug(style=msg-txt-style) No wallet found   
                           
 
-    { uninstall, wallet, balance, balance-usd, pending, send, receive, swap, usd-rate } = wallet-funcs store, web3t, wallets, wallet
+    { wallet-icon, uninstall, wallet, balance, balance-usd, pending, send, receive, swap, usd-rate } = wallet-funcs store, web3t, wallets, wallet
     lang = get-lang store
     
     label-uninstall =
@@ -195,7 +196,8 @@ module.exports = (store, web3t, wallets, wallet)-->
     placeholder-coin =
         | store.current.refreshing => "placeholder-coin"
         | _ => ""
-        
+    
+    is-custom = wallet?coin?custom is yes    
     wallet-is-disabled = isNaN(wallet?balance)
     is-loading = store.current.refreshing is yes
     send-swap-disabled = wallet-is-disabled or is-loading
@@ -228,7 +230,14 @@ module.exports = (store, web3t, wallets, wallet)-->
         (wallet?network?networks ? []) 
             |> obj-to-pairs
             |> map (-> it.1 )
-            |> filter (-> it.disabled isnt yes and it.referTo in installed-networks)    
+            |> filter (-> it.disabled isnt yes and it.referTo in installed-networks)
+            
+    uninstall-action = (e)->
+        if is-custom isnt yes
+            return uninstall(e) 
+        agree <- confirm store, "You can add this token back in the future by going to “Add custom token”."
+        return if not agree
+        uninstall(e)    
     
     wallet-style=
         color: style.app.text3
@@ -252,14 +261,15 @@ module.exports = (store, web3t, wallets, wallet)-->
                     .pug
                         span.title.pug(class="#{placeholder}") #{name}
                         if wallet?coin?token not in <[ btc vlx vlx_native vlx2 eth vlx_evm vlx_evm_legacy ]>
-                            span.pug.uninstall(on-click=uninstall style=uninstall-style) #{label-uninstall}
+                            span.pug.uninstall(on-click=uninstall-action style=uninstall-style) #{label-uninstall}
                     .balance.pug(class="#{placeholder}")
                         .pug.token-balance(title="#{wallet?balance}")
                             span.pug #{ round-human wallet?balance }
                             span.pug #{ tokenDisplay }
-                        .pug.usd-balance(class="#{placeholder}" title="#{balance-usd}")
-                            span.pug #{ round-human balance-usd }
-                            span.pug USD
+                        if not is-custom
+                            .pug.usd-balance(class="#{placeholder}" title="#{balance-usd}")
+                                span.pug #{ round-human balance-usd }
+                                span.pug USD
                         if +wallet.pending-sent >0 and no
                             .pug.pending
                                 span.pug -#{ pending }
@@ -285,9 +295,10 @@ module.exports = (store, web3t, wallets, wallet)-->
                     .stats.pug
                         span.stats-style.pug
                             .pug.coin(style=text)
-                                img.label-coin.pug(class="#{placeholder-coin}" src="#{wallet?coin?image}")
+                                img.label-coin.pug(class="#{placeholder-coin}" src="#{wallet-icon}")
                                 .pug(class="#{placeholder}") #{ token-display }
-                                .pug.course(class="#{placeholder}" title="#{usd-rate}") $#{ round-human usd-rate}
+                                if not is-custom
+                                    .pug.course(class="#{placeholder}" title="#{usd-rate}") $#{ round-human usd-rate}
                         wallet-stats store, web3t
                 .wallet-header-part.right.pug(style=text)
                     .pug.counts

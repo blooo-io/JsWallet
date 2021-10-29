@@ -19,6 +19,8 @@ require! {
         backdrop-filter: blur(5px)
         top: 0
         right: 0
+        left: 0
+        bottom: 0
         z-index: 12
         transition: all .5s
     .content
