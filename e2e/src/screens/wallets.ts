@@ -1,8 +1,10 @@
+import { helpers } from '../tools/helpers';
 import { log } from '../tools/logger';
 import { ElementHandle, Page } from '../types';
 import { BaseScreen } from './base';
 
-export type Currency = 'Bitcoin' | 'Velas' | 'Velas Native' | 'Velas EVM' | 'Litecoin' | 'Ethereum' | 'Ethereum Legacy';
+export type Currency = 'token-vlx_native' | 'token-vlx_evm' | 'token-vlx2' | 'token-vlx_usdc' | 'token-vlx_usdt' | 'token-vlx_eth' | 'token-vlx_evm_legacy' | 'token-vlx_busd' | 'token-btc' | 'token-eth' | 'token-vlx_erc20' | 'token-usdc' | 'token-usdt_erc20' | 'token-eth_legacy' | 'token-usdt_erc20_legacy' | 'token-ltc' | 'token-vlx_huobi' | 'token-huobi' | 'token-bnb' | 'token-busd' | 'token-bsc_vlx';
+
 export type Balances = Record<Currency, string | null>;
 
 export class WalletsScreen extends BaseScreen {
@@ -21,13 +23,13 @@ export class WalletsScreen extends BaseScreen {
 
   async selectWallet(tokenName: Currency): Promise<void> {
     await this.waitForWalletsDataLoaded();
-    const tokenNameSelector = `div.big.wallet-item .balance.title:text-matches("^ ${tokenName}$")`;
+    const tokenSelector = `div.big.wallet-item#${tokenName}`;
     // some time is required to load wallets and switch between them; so custom waiter is implemented
-    let requiredCurrencyIsALreadySelected = await this.page.isVisible(tokenNameSelector);
+    let requiredCurrencyIsALreadySelected = await this.page.isVisible(tokenSelector);
     while (!requiredCurrencyIsALreadySelected) {
-      await this.page.click(`.balance.title:text(" ${tokenName}")`);
+      await this.page.click(`#${tokenName}`);
       await this.page.waitForTimeout(1000);
-      requiredCurrencyIsALreadySelected = await this.page.isVisible(tokenNameSelector);
+      requiredCurrencyIsALreadySelected = await this.page.isVisible(tokenSelector);
     }
     log.debug(`${tokenName} was selected`);
     await this.waitForWalletsDataLoaded();
@@ -37,13 +39,27 @@ export class WalletsScreen extends BaseScreen {
     await this.waitForWalletsDataLoaded();
     const walletElements = await this.page.$$('.wallet-item');
     const balances: Balances = {
-      'Velas': null,
-      'Velas EVM': null,
-      'Velas Native': null,
-      Bitcoin: null,
-      Litecoin: null,
-      Ethereum: null,
-      'Ethereum Legacy': null
+      'token-vlx_native': null,
+      'token-vlx_evm': null,
+      'token-vlx2': null,
+      'token-vlx_usdc': null,
+      'token-vlx_usdt': null,
+      'token-vlx_eth': null,
+      'token-vlx_evm_legacy': null,
+      'token-vlx_busd': null,
+      'token-btc': null,
+      'token-eth': null,
+      'token-vlx_erc20': null,
+      'token-usdc': null,
+      'token-usdt_erc20': null,
+      'token-eth_legacy': null, 
+      'token-usdt_erc20_legacy': null,
+      'token-ltc': null,
+      'token-vlx_huobi': null,
+      'token-huobi': null, 
+      'token-bnb': null,
+      'token-busd': null,
+      'token-bsc_vlx': null      
     };
 
     for (let i = 0; i < walletElements.length; i++) {
@@ -62,7 +78,7 @@ export class WalletsScreen extends BaseScreen {
   }
 
   async isWalletInWalletsList(tokenName: Currency): Promise<boolean> {
-    return this.page.isVisible(`.balance.title:text(" ${tokenName}")`);
+    return this.page.isVisible(`#${tokenName}`);
   }
 
   private async getAmountOfTokensFromOfWalletItemElement(walletElement: ElementHandle<SVGElement | HTMLElement>): Promise<string> {
@@ -98,15 +114,7 @@ export class WalletsScreen extends BaseScreen {
       await this.page.click('.header .button.lock.mt-5');
     },
     add: async (tokenName: Currency) => {
-      const walletItemsList = await this.page.$$('.manage-account .settings .list .item');
-      for (let i = 0; i < walletItemsList.length; i++) {
-        const walletItem = walletItemsList[i];
-        const wallenTokenName = (await (await walletItem.$(`span.title:text("${tokenName}")`))?.textContent())?.trim();
-        const addButton = await walletItem.$('button');
-        if (wallenTokenName === tokenName) {
-          await addButton?.click();
-        }
-      }
+      await this.page.click(`#add-${tokenName} button`);
     }
   }
 
@@ -114,6 +122,8 @@ export class WalletsScreen extends BaseScreen {
     if (swapFromToken === swapToToken){
       throw TypeError('You can\'t swap to the same token you are swapping from');
     }
+
+    await this.makeSureTokenIsAdded(swapFromToken);
 
     await this.selectWallet(swapFromToken);
   
@@ -131,6 +141,7 @@ export class WalletsScreen extends BaseScreen {
     for (let i = 0; i < 5; i++) {
       try {
         await this.page.click('.with-swap #wallet-swap');
+        return;
       } catch {
         log.warn(`There was attempt to click the Swap button but it's inactive. Retry in 1 sec...`);
         await this.page.waitForTimeout(1000);
@@ -146,14 +157,35 @@ export class WalletsScreen extends BaseScreen {
     fill: async(transactionAmount: string) => {
       await this.page.fill('div.amount-field .input-area input[label="Send"]', transactionAmount);
     },
+    whatNetwork: async(swapToToken: Currency): Promise<string> =>{
+      switch(swapToToken){
+      case 'token-vlx2': 
+        return 'Velas Legacy';
+      case 'token-vlx_native':
+        return 'Velas Native';
+      case 'token-vlx_evm':
+        return 'Velas Evm';
+      case 'token-bsc_vlx':
+        return 'Binance Smart Chain (VLX BEP20)';
+      case 'token-vlx_huobi':
+        return 'Huobi ECO Chain (VLX HRC20)';
+      case 'token-vlx_erc20':
+        return 'Ethereum (VLX ERC20)';        
+      default: return 'default'
+      }
+    },
     chooseDestinationNetwork: async(swapToToken: Currency) => {
+      const destinationNetwork = await this.swap.whatNetwork(swapToToken);
+      if (destinationNetwork === 'default'){
+        return
+      }
       let chosenNetwork = await this.page.getAttribute('.change-network', 'value');
-      let switchCount = 0;
-      while (chosenNetwork !== swapToToken.toUpperCase()){
+      if (chosenNetwork !== destinationNetwork){
         await this.page.click('.network-slider .right');
         chosenNetwork = await this.page.getAttribute('.change-network', 'value');
-        switchCount++;
-        if (switchCount > 10) throw new Error(`Cannot switch to destination currency "${swapToToken}" inside swap menu`);
+        const destinationNetowkSelector = `.switch-menu div:text-matches("^ ${destinationNetwork}$")`;
+        await this.page.click(destinationNetowkSelector);
+        await this.waitForSelectorDisappears('.switch-menu', {timeout: 5000});
       }
     },
     confirm: async() => {
@@ -179,6 +211,14 @@ export class WalletsScreen extends BaseScreen {
       await this.page.waitForTimeout(2000);
       await this.refresh();
       currentTxSignature = await this.getLastTxSignatureInHistory();
+    }
+  }
+
+  async makeSureTokenIsAdded(currency: Currency): Promise <void> {
+    await this.waitForWalletsDataLoaded();
+    if (!await this.isWalletInWalletsList(currency)){
+      await this.addWalletsPopup.open();
+      await this.addWalletsPopup.add(currency);
     }
   }
 }

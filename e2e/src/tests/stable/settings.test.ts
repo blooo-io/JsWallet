@@ -45,7 +45,7 @@ test.describe('Settings >', () => {
     await page.waitForSelector('.amount:not(.placeholder)');
 
     await walletsScreen.openMenu('wallets');
-    await walletsScreen.selectWallet('Velas Native');
+    await walletsScreen.selectWallet('token-vlx_native');
 
     assert.equal(await walletsScreen.getWalletAddress(), 'BfGhk12f68mBGz5hZqm4bDSDaTBFfNZmegppzVcVdGDW', 'Account 2 address on UI does not equal expected');
   });
@@ -58,7 +58,7 @@ test.describe('Settings >', () => {
     assert.isFalse(await page.isVisible('#menu-testnet'));
     
     await walletsScreen.openMenu('wallets');
-    await walletsScreen.selectWallet('Bitcoin');
+    await walletsScreen.selectWallet('token-btc');
     assert.equal(await walletsScreen.getWalletAddress(), '1PV8RPEL8kNBnQytq2881TE3bSZJbJazDw', 'Mainnet BTC address on UI does not equal expected');
     
     await walletsScreen.openMenu('settings');
@@ -67,7 +67,7 @@ test.describe('Settings >', () => {
     
     
     await walletsScreen.openMenu('wallets');
-    await walletsScreen.selectWallet('Bitcoin');
+    await walletsScreen.selectWallet('token-btc');
     assert.equal(await walletsScreen.getWalletAddress(), 'n415iSKJwmoSZXTWYb6VqNSNTSA1YMwL8U', 'Testnet BTC address on UI does not equal expected');
   });
 

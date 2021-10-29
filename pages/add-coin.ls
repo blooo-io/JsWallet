@@ -218,12 +218,11 @@ create-item = ({ store, web3t }, item)-->
         background: style.app.input
     menu-style=
         color: style.app.text
-    .pug.outer-item
-        .item.pug(style=background, id="add-token-#{title}")
-            img.pug(src="#{item.image}")
-            span.pug.title(style=menu-style) #{title}
-            button.pug(on-click=add style=button-style)
-                icon \Plus, 20
+    .item.pug(style=background, id="add-token-#{item.token}")
+        img.pug(src="#{item.image}")
+        span.pug.title(style=menu-style) #{title}
+        button.pug(on-click=add style=button-style)
+            icon \Plus, 20
 filter-item = (store)-> (item)->
     return yes if (store.current.filter-plugins ? "").length is 0
     (item.token ? "").index-of(store.current.filter-plugins) > -1
