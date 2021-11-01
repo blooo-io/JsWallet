@@ -66,7 +66,8 @@ test.describe('Navigation >', () => {
           break;
       }
       await page.click('.close');
-      assert.isTrue(await auth.isLoggedIn());
+      await walletsScreen.waitForWalletsDataLoaded();
+      assert.isTrue(await page.isVisible('.big.wallet'));
     }
   });
 
