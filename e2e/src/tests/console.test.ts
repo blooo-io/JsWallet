@@ -14,8 +14,6 @@ test.describe(' > ', () => {
     setupPage(page);
     walletsScreen = new WalletsScreen(page);
     auth = new Auth(page);
-    await page.goto(getWalletURL({ network: 'mainnet' }));
-    await auth.loginByRestoringSeed(data.wallets.login.seed);
   });
 
   test('Check console for errors', async ({ page }) => {
@@ -31,6 +29,9 @@ test.describe(' > ', () => {
       errorLog.push(exception);
     });
 
+    await page.goto(getWalletURL({ network: 'mainnet' }));
+    await auth.loginByRestoringSeed(data.wallets.login.seed);
+
     await walletsScreen.waitForWalletsDataLoaded();
     await walletsScreen.addWalletsPopup.open();
 
@@ -45,6 +46,6 @@ test.describe(' > ', () => {
     await page.click('.manage-account .closed');
     await walletsScreen.waitForWalletsDataLoaded();
 
-    assert.lengthOf(errorLog, 0, `Following console errors have been found:\n${errorLog.join('\n')}\n`);
+    assert.lengthOf(errorLog, 0, `Following console errors have been found:\n${errorLog.join('\n================\n')}\n`);
   });
 });
