@@ -14,7 +14,7 @@ test.describe('Wallets screen >', () => {
     setupPage(page);
     auth = new Auth(page);
     walletsScreen = new WalletsScreen(page);
-    await page.goto(getWalletURL());
+    await page.goto(getWalletURL(), { waitUntil: 'networkidle' });
   });
 
   test.describe('Transactions >', () => {

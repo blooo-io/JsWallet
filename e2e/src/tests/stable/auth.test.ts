@@ -14,7 +14,7 @@ test.describe('Auth >', () => {
 
   test.beforeEach(async ({ page }) => {
     setupPage(page);
-    await page.goto(getWalletURL());
+    await page.goto(getWalletURL(), { waitUntil: 'networkidle' });
     walletsScreen = new WalletsScreen(page);
     auth = new Auth(page);
   });

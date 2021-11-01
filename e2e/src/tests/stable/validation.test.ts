@@ -14,7 +14,7 @@ test.describe('Validation >', () => {
     setupPage(page);
     auth = new Auth(page);
     walletsScreen = new WalletsScreen(page);
-    await page.goto(getWalletURL());
+    await page.goto(getWalletURL(), { waitUntil: 'networkidle' });
     await auth.loginByRestoringSeed(data.wallets.txSender.seed);
     await walletsScreen.selectWallet('Velas Native');
   });
@@ -36,7 +36,7 @@ test.describe('Validation >', () => {
     await page.fill('div.amount-field .textfield[label="Send"]', '99999999');
     // if send button is disabled, we know balance check has been finished
     await page.waitForSelector('#send-confirm[disabled]');
-    assert.isTrue(await page.isVisible('text=/not enough/i'));
+    await page.waitForSelector('text=/not enough/i');
 
     // need to clear the field because actions are too fast and test fails
     await page.fill('div.amount-field .textfield[label="Send"]', '');

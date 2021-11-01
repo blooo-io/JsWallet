@@ -60,18 +60,21 @@ jobs:
       - name: install npm modules
         run: npm i
 
-      - name: install PW deps
-        # run: npx playwright install chrome
-        run: npx playwright install --with-deps
+      # - name: install PW deps
+      #   # run: npx playwright install chrome
+      #   run: npx playwright install --with-deps
 
-      - name: install chrome
-        run: npx playwright install chrome
+      # - name: install chrome
+      #   run: npx playwright install chrome
 
       - name: clean previous test results
         run: rm -rf ./test-results/
 
       - name: blockchain health check
         run: CI=true npm run blockchain-health-check
+
+      - name: balances api health check
+        run: CI=true npm run balances-api-health-check
 
       - name: run tests
         run: CI=true npm test

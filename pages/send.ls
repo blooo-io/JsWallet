@@ -507,11 +507,12 @@ send = ({ store, web3t })->
     go-back-from-send = ->
         send.error = ''
         go-back!  
-    makeDisabled = send.amount-send <= 0
+    makeDisabled = send.amount-send <= 0 or store.current.send.fee-calculating is yes
     token = store.current.send.coin.token
     is-swap = store.current.send.is-swap is yes
     send-func = before-send-anyway
-    disabled = not send.to? or send.to.trim!.length is 0 or ((send.error ? "").index-of "address") > -1     
+    disabled = not send.to? or send.to.trim!.length is 0 or ((send.error ? "").index-of "address") > -1 
+    placeholder-class = if store.current.send.fee-calculating is yes then "placeholder" else ""   
     receiver-is-swap-contract = contracts.is-swap-contract(store, store.current.send.contract-address)
     visible-error = if send.error? and send.error.length > 0 then "visible" else ""
     get-recipient = (address)->
@@ -543,7 +544,10 @@ send = ({ store, web3t })->
      
     input-wrapper-style = 
         | is-custom is yes => input-custom-style
-        | _ => input-style   
+        | _ => input-style 
+    inline-style = 
+        display: "inline"
+        min-width: "30px"  
     
     /* Render */
     .pug.content
@@ -630,7 +634,7 @@ send = ({ store, web3t })->
                         tr.pug.orange
                             td.pug #{lang.fee}
                             td.pug
-                                span.pug(title="#{send.amount-send-fee}") #{round-human send.amount-send-fee}
+                                span.pug(class="#{placeholder-class}" title="#{send.amount-send-fee}" style=inline-style) #{round-human send.amount-send-fee}
                                     img.label-coin.pug(src="#{fee-coin-image}")
                                     span.pug(title="#{send.amount-send-fee}") #{fee-token-display}
                                 .pug.usd $ #{round-human send.amount-send-fee-usd}
@@ -659,6 +663,7 @@ module.exports.init = ({ store, web3t }, cb)->
     { execute-contract-data, wallet, getBridgeInfo } = send-funcs store, web3t
     return cb null if not wallet?
     return cb null if send.sending is yes
+    store.current.send.fee-calculating = no
     store.current.send.foreign-network-fee = 0
     store.current.send.amountCharged = 0
     store.current.send.amountChargedUsd = 0

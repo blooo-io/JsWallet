@@ -15,7 +15,8 @@ create-send =->
     id: ""
     to: ""
     chosen-network: null 
-    contract-address: null  
+    contract-address: null 
+    fee-calculating: no 
     details: yes
     propose-escrow: no
     address: ''

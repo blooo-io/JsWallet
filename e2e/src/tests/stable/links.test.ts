@@ -6,7 +6,7 @@ import { setupPage } from '../../pw-helpers/setup-page';
 test.describe('Links >', () => {
   test.beforeEach(async ({ page }) => {
     setupPage(page);
-    await page.goto(getWalletURL());
+    await page.goto(getWalletURL(), { waitUntil: 'networkidle' });
   });
 
   test('Download links are correct', async ({ page }) => {

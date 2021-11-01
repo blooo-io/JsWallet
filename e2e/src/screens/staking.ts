@@ -29,7 +29,7 @@ export class StakingScreen extends BaseScreen {
     } catch (e) {
       log.debug('No loading after opening staking. Looks like it\'s already fully loaded.');
     }
-    await this.page.waitForSelector('.validator-item', { timeout: 26000 });
+    await this.page.waitForSelector('.validator-item', { timeout: 31000 });
 
     // wait staking account item or make sure there are no accounts
     await this.page.waitForSelector(`${this.stakingAccountAddress}, #staking-accounts .amount:text(" (0) ")`);
@@ -238,7 +238,7 @@ export class StakingScreen extends BaseScreen {
         log.debug(`There are ${toWithdrawStakesAmount} stakes to be withdrawn as precondition`);
         await this.clickWithdraw();
         await this.page.click('" Confirm"');
-        await this.page.waitForSelector('" Funds withdrawn successfully"');
+        await this.page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
         await this.page.click('" Ok"');
         await this.waitForLoaded();
         toWithdrawStakesAmount = await this.getAmountOfStakes('Withdraw');
@@ -251,7 +251,7 @@ export class StakingScreen extends BaseScreen {
         await this.selectAccount('Delegate');
         await this.page.click('button span:text(" Withdraw")');
         await this.page.click('" Confirm"');
-        await this.page.waitForSelector('" Funds withdrawn successfully"');
+        await this.page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
         await this.page.click('" Ok"');
         await this.waitForLoaded();
         notDelegatedStakesAmount = await this.getAmountOfStakes('Delegate');

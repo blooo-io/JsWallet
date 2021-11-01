@@ -150,7 +150,6 @@ module.exports = ({store})->
     */     
     eth_usdt-usdt_velas-swap = (token, chosen-network, cb)->     
         return cb null if not (token is \usdt_erc20 and chosen-network.id is \vlx_usdt)
-        #console.log "eth_usdt-usdt_velas-swap"   
         web3 = velas-web3 store
         { FOREIGN_BRIDGE, FOREIGN_BRIDGE_TOKEN } = wallet.network
         return cb "FOREIGN_BRIDGE is not defined" if not FOREIGN_BRIDGE?
@@ -166,11 +165,9 @@ module.exports = ({store})->
         data = 
             | up(wallet.address) is up(store.current.send.to) => contract.transfer.get-data(FOREIGN_BRIDGE, value)
             | _ => contract.relayTokens.get-data(receiver, value)
-        console.log "is-self-send is yes" up(wallet.address) is up(store.current.send.to)
         contract-address =
            | up(wallet.address) is up(store.current.send.to) => FOREIGN_BRIDGE_TOKEN
            | _ => FOREIGN_BRIDGE    
-        console.log "set contract address to " contract-address       
         store.current.send.contract-address = contract-address
         store.current.send.data = data        
         cb null, data 
@@ -200,7 +197,6 @@ module.exports = ({store})->
         cb null, data        
         
     form-contract-data = (cb)->
-        console.log "[form-contract-data]"    
         if not store.current.send.chosen-network?
             return cb null 
         
@@ -315,7 +311,6 @@ module.exports = ({store})->
             
         /* Swap from BSC VELAS to VELAS EVM */
         if token is \bsc_vlx and chosen-network.id is \vlx_evm
-            console.log "Swap from BSC VELAS to VELAS EVM"
             value = store.current.send.amountSend
             value = value `times` (10^18)
             
@@ -378,7 +373,6 @@ module.exports = ({store})->
         if token is \vlx_erc20 and chosen-network.id in <[ vlx_evm vlx2 ]>
             value = store.current.send.amountSend
             value2 = to-hex(value `times` (10^18)).toString(16)
-            console.log "value2" value2  
             value = (value `times` (10^18))
             network = wallet.network
 
@@ -392,7 +386,6 @@ module.exports = ({store})->
 
             contract = web3.eth.contract(abis.ERC20BridgeToken).at(FOREIGN_BRIDGE_TOKEN)
             data = contract.transferAndCall.get-data(FOREIGN_BRIDGE, value, sending-to)
-            console.log "⚽️[get-gas-estimate] $data" data   
             send.data = data
             send.contract-address = FOREIGN_BRIDGE_TOKEN            
             
@@ -441,7 +434,8 @@ module.exports = ({store})->
             web3.eth.provider-url = wallet.network.api.web3Provider
             contract = web3.eth.contract(abis.EvmToNativeBridge).at(EVM_TO_NATIVE_BRIDGE)
             
-            send.data = contract.transferToNative.get-data(eth-address)           
+            data = contract.transferToNative.get-data(eth-address)
+            send.data =data           
             store.current.send.contract-address = EVM_TO_NATIVE_BRIDGE
         
         send.data = data

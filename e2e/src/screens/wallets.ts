@@ -131,6 +131,7 @@ export class WalletsScreen extends BaseScreen {
     for (let i = 0; i < 5; i++) {
       try {
         await this.page.click('.with-swap #wallet-swap');
+        return;
       } catch {
         log.warn(`There was attempt to click the Swap button but it's inactive. Retry in 1 sec...`);
         await this.page.waitForTimeout(1000);
