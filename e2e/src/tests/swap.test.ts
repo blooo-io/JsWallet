@@ -8,7 +8,6 @@ import { log } from '../tools/logger';
 import { velasNative } from '@velas/velas-chain-test-wrapper';
 import velasTestnet from '../api/velas-testnet/rpc';
 import { getWalletURL } from '../config';
-import { helpers } from '../tools/helpers';
 
 let auth: Auth;
 let walletsScreen: WalletsScreen;

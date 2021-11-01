@@ -1,4 +1,3 @@
-import { helpers } from '../tools/helpers';
 import { log } from '../tools/logger';
 import { ElementHandle, Page } from '../types';
 import { BaseScreen } from './base';
