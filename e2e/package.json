@@ -11,7 +11,8 @@
     "test:stable": "npx playwright test tests/stable/",
     "test:unstable": "npx playwright test tests/unstable/",
     "test:testnet": "npx playwright test tests/testnet/",
-    "blockchain-health-check": "ts-node src/tests/blockchain-health-check.ts"
+    "blockchain-health-check": "ts-node src/tests/blockchain-health-check.ts",
+    "balances-api-health-check": "ts-node src/tests/balances-api-healcheck.ts"
   },
   "repository": {
     "type": "git",
@@ -37,7 +38,6 @@
     "@velas/velas-chain-test-wrapper": "https://github.com/velas/velas-chain-test-wrapper.git",
     "axios": "^0.21.1",
     "chai": "^4.3.4",
-    "playwright": "^1.15",
     "playwright-chromium": "^1.15.0",
     "tracer": "^1.1.4",
     "ts-node": "^10.0.0"

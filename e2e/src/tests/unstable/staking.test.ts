@@ -133,7 +133,7 @@ test.describe('Staking >', () => {
       await stakingScreen.selectAccountByAddress(addedAfterSplitAccountAddress);
       await page.click('button span:text(" Withdraw")');
       await page.click('" Confirm"');
-      await page.waitForSelector('" Funds withdrawn successfully"', { timeout: 10000 });
+      await page.waitForSelector('" Funds withdrawn successfully"', { timeout: 20000 });
       await page.click('" Ok"');
     });
 
@@ -145,7 +145,7 @@ test.describe('Staking >', () => {
       await stakingScreen.selectAccount('Delegate');
       await page.click('button span:text(" Withdraw")');
       await page.click('" Confirm"');
-      await page.waitForSelector('" Funds withdrawn successfully"');
+      await page.waitForSelector('" Funds withdrawn successfully"', { timeout: 30000 });
       await page.click('" Ok"');
       const finalAmountOfStakingAccounts = await stakingScreen.waitForStakesAmountUpdated(initialAmountOfStakingAccounts, 'all');
 

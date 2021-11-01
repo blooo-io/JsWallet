@@ -9,7 +9,7 @@ const config: PlaywrightTestConfig = {
   maxFailures: globalConfig.CI ? 10 : 2,
   retries: globalConfig.CI ? 2 : 0,
   timeout: 120000,
-  workers: 1,
+  workers: 2,
   // reporter: 'list',
   // repeatEach: 5,
   reporter: [['list'], ['junit', { outputFile: 'test-results/test-results.xml' }], ['allure-playwright']],

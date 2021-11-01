@@ -14,7 +14,7 @@ test.describe('Navigation >', () => {
     setupPage(page);
     walletsScreen = new WalletsScreen(page);
     auth = new Auth(page);
-    await page.goto(getWalletURL());
+    await page.goto(getWalletURL(), { waitUntil: 'networkidle' });
     await auth.loginByRestoringSeed(data.wallets.login.seed);
   });
 
