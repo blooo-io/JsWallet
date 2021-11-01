@@ -7,6 +7,7 @@ import { Auth } from '../../screens/auth';
 import { WalletsScreen } from '../../screens/wallets';
 import { data } from '../../test-data';
 import { helpers } from '../../tools/helpers';
+import { log } from '../../tools/logger';
 
 let auth: Auth;
 let walletsScreen: WalletsScreen;
@@ -29,8 +30,8 @@ test.describe('Transactions >', () => {
     await walletsScreen.selectWallet('token-vlx_native');
     await page.click('#wallets-send');
     await page.fill('#send-recipient', 'FJWtmzRwURdnrgn5ZFWvYNfHvXMtHK1WS7VHpbnfG73s');
-    await page.type('div.amount-field input[label="Send"]', String(transactionAmount));
-    await page.click('#send-confirm');
+    await page.fill('div.amount-field input[label="Send"]', String(transactionAmount));
+    await page.click('#send-confirm:not([disabled])');
     await page.click('#confirmation-confirm');
 
     const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
@@ -54,16 +55,12 @@ test.describe('Transactions >', () => {
   });
 
   test('Send BTC', async ({ page }) => {
-    // TODO: network request error
-    test.skip();
-
     await walletsScreen.selectWallet('token-btc');
     await page.click('#wallets-send');
     await page.fill('#send-recipient', 'mvvFj8fbFpL61S2HyhvcqEHjT2ThB1f78j', { timeout: 15000 }); //accound with index 2
-    await page.type('div.amount-field input[label="Send"]', '0.00001');
-    await page.click('#send-confirm');
+    await page.fill('div.amount-field input[label="Send"]', '0.00001');
+    await page.click('#send-confirm:not([disabled])');
     await page.click('#confirmation-confirm');
-
     const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
     assert.isTrue(txSignatureLink.includes('https://bitpay.com/insight/#/BTC/testnet/'));
   });
@@ -79,8 +76,8 @@ test.describe('Transactions >', () => {
     await walletsScreen.selectWallet('token-ltc');
     await page.click('#wallets-send', { timeout: 10000 });
     await page.fill('#send-recipient', 'mvvFj8fbFpL61S2HyhvcqEHjT2ThB1f78j'); //accound with index 2
-    await page.type('div.amount-field input[label="Send"]', '0.00001');
-    await page.click('#send-confirm');
+    await page.fill('div.amount-field input[label="Send"]', '0.00001');
+    await page.click('#send-confirm:not([disabled])');
     await page.click('#confirmation-confirm');
 
     const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
@@ -95,8 +92,8 @@ test.describe('Transactions >', () => {
     await walletsScreen.selectWallet('token-eth_legacy');
     await page.click('#wallets-send');
     await page.fill('#send-recipient', '0xb322f01cb6a191974e7291600a4dc1b46f00f752'); //accound with index 2
-    await page.type('div.amount-field input[label="Send"]', String(transactionAmount));
-    await page.click('#send-confirm');
+    await page.fill('div.amount-field input[label="Send"]', String(transactionAmount));
+    await page.click('#send-confirm:not([disabled])');
     await page.click('#confirmation-confirm');
 
     const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
