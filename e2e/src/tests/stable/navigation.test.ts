@@ -40,22 +40,26 @@ test.describe('Navigation >', () => {
           break;
 
         case 'search':
+          await walletsScreen.openMenu('wallets');
           await walletsScreen.openMenu('search');
           await page.waitForSelector('[placeholder="dapps"]');
           break;
 
         case 'staking':
+          await walletsScreen.openMenu('wallets');
           await walletsScreen.openMenu('staking');
-          await page.waitForSelector('.validator-item', { timeout: 20000 });
+          await page.waitForSelector('.create-staking-account');
           break;
 
         case 'swap':
+          await walletsScreen.openMenu('wallets');
           await page.waitForSelector('.with-swap #wallet-swap', { timeout: 20000, state: 'visible' });
           await page.click('.with-swap #wallet-swap');
           await page.waitForSelector('.network-slider');
           break;
 
         case 'send':
+          await walletsScreen.openMenu('wallets');
           await page.click('#wallets-send');
           await page.waitForSelector('#send-recipient');
           assert.isFalse(await page.isVisible('.network-slider'));
