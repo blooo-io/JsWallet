@@ -64,14 +64,14 @@ export class WalletsScreen extends BaseScreen {
 
     for (let i = 0; i < walletElements.length; i++) {
       const walletElement = walletElements[i];
-      const tokenName: Currency = await this.getTokenNameOfWalletItemElement(walletElement) as Currency;
+      const tokenId: Currency = await this.getTokenIdOfWalletItemElement(walletElement) as Currency;
 
       // skip if wallet is not in the wallets list
-      if (!await this.isWalletInWalletsList(tokenName)) continue;
+      if (!await this.isWalletInWalletsList(tokenId)) continue;
 
       const amountOfTokens = await this.getAmountOfTokensFromOfWalletItemElement(walletElement);
       if (amountOfTokens === '..') continue;
-      balances[tokenName] = amountOfTokens;
+      balances[tokenId] = amountOfTokens;
     }
     log.info(balances);
     return balances;
@@ -91,6 +91,12 @@ export class WalletsScreen extends BaseScreen {
     const tokenName = (await (await walletElement.$('.balance.title'))?.textContent())?.trim();
     if (!tokenName) throw new Error('Cannot get token name');
     return tokenName;
+  }
+
+  private async getTokenIdOfWalletItemElement(walletElement: ElementHandle<SVGElement | HTMLElement>): Promise<string> {
+    const tokenId = await walletElement.getAttribute('id');
+    if (!tokenId) throw new Error('Cannot get token id');
+    return tokenId;
   }
 
   async updateBalances(): Promise<void> {
@@ -164,7 +170,7 @@ export class WalletsScreen extends BaseScreen {
       case 'token-vlx_native':
         return 'Velas Native';
       case 'token-vlx_evm':
-        return 'Velas Evm';
+        return 'Velas EVM';
       case 'token-bsc_vlx':
         return 'Binance Smart Chain (VLX BEP20)';
       case 'token-vlx_huobi':
