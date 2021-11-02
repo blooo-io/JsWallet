@@ -8,7 +8,7 @@ const config: PlaywrightTestConfig = {
   // globalTeardown: '',
   maxFailures: globalConfig.CI ? 10 : 2,
   retries: globalConfig.CI ? 2 : 0,
-  timeout: 120000,
+  timeout: 240000,
   workers: 2,
   // reporter: 'list',
   // repeatEach: 5,
