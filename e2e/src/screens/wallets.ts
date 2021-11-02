@@ -129,15 +129,11 @@ export class WalletsScreen extends BaseScreen {
     }
 
     await this.makeSureTokenIsAdded(swapFromToken);
-
-    await this.selectWallet(swapFromToken);
-  
+    await this.makeSureTokenIsAdded(swapToToken);
+    await this.selectWallet(swapFromToken);  
     await this.swap.click();
-
     await this.swap.fill(String(transactionAmount));
-
     await this.swap.chooseDestinationNetwork(swapToToken);
-
     await this.swap.confirm();
   }
 
@@ -175,7 +171,7 @@ export class WalletsScreen extends BaseScreen {
       case 'token-vlx_huobi':
         return 'Huobi ECO Chain (VLX HRC20)';
       case 'token-vlx_erc20':
-        return 'Ethereum (VLX ERC20)';        
+        return 'Ethereum';
       default: return 'default'
       }
     },
@@ -188,7 +184,7 @@ export class WalletsScreen extends BaseScreen {
       if (chosenNetwork !== destinationNetwork){
         await this.page.click('.network-slider .right');
         chosenNetwork = await this.page.getAttribute('.change-network', 'value');
-        const destinationNetowkSelector = `.switch-menu div:text-matches("^ ${destinationNetwork}$")`;
+        const destinationNetowkSelector = `.switch-menu div:text-matches("${destinationNetwork}", "i")`;
         await this.page.click(destinationNetowkSelector);
         await this.waitForSelectorDisappears('.switch-menu', {timeout: 5000});
       }
@@ -197,6 +193,24 @@ export class WalletsScreen extends BaseScreen {
       await this.page.click('#send-confirm');
       await this.page.click('#confirmation-confirm', {timeout: 10000});
     },
+  }
+
+  async confirmTxFromEvmExplorer(): Promise<void> {
+    const [txPage] = await Promise.all([
+      this.context.waitForEvent('page'),
+      this.page.click('.sent .text a'),
+    ]);
+
+    await txPage.waitForLoadState();
+    
+    while(await txPage.isVisible('.error-title')){
+      await txPage.waitForLoadState();
+      log.debug('Tx hash not found, refreshing...');
+      await txPage.waitForTimeout(1000);
+      await txPage.reload();
+    }
+
+    await txPage.waitForSelector('[data-transaction-status="Success"]');
   }
 
   async getLastTxSignatureInHistory(): Promise<string> {
