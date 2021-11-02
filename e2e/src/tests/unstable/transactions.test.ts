@@ -55,6 +55,9 @@ test.describe('Transactions >', () => {
   });
 
   test('Send BTC', async ({ page }) => {
+    // TODO: network request error
+    test.skip();
+
     await walletsScreen.selectWallet('token-btc');
     await page.click('#wallets-send');
     await page.fill('#send-recipient', 'mvvFj8fbFpL61S2HyhvcqEHjT2ThB1f78j', { timeout: 15000 }); //accound with index 2
