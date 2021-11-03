@@ -319,7 +319,7 @@ module.exports = ({store})->
             web3 = new Web3(new Web3.providers.HttpProvider(wallet?network?api?web3Provider))
             web3.eth.provider-url = wallet?network?api?web3Provider      
             contract = web3.eth.contract(abis.ForeignBridgeNativeToErc).at(FOREIGN_BRIDGE_TOKEN) 
-            debugger
+            #debugger
             data = 
                 | up(wallet.address) is up(store.current.send.to) => contract.transfer.get-data(FOREIGN_BRIDGE, to-hex(value), send.to)
                 | _ => contract.transferAndCall.get-data(FOREIGN_BRIDGE, value, send.to)                   
