@@ -24,6 +24,9 @@ create-send =->
     fee-type: \auto
     fee-custom-amount: \0
     tx-type: \regular
+    amount-buffer:
+        val: "0"
+        usdVal: "0"    
     amount-send: \0
     amount-charged: \0
     amount-charged-usd: \0
@@ -34,7 +37,10 @@ create-send =->
     amount-obtain: \0
     data: ""
     gas: null
-    gas-price: null    
+    gas-price: null  
+    typing-amount-time-ms: 0
+    TYPING_THRESHOLD_MS: 500   
+    gasEstimate: \0    
     homeFee: 0
     homeFeePercent: 0
     is-swap: no 

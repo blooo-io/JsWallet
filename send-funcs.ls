@@ -33,10 +33,7 @@ require! {
     \./icons.ls    
 }
 
-amount-buffer = {
-    val: "0"
-    usdVal: "0"  
-}
+
 abis =
     Staking      : require("../web3t/contracts/StakingAuRa.json").abi
     ValidatorSet : require("../web3t/contracts/ValidatorSetAuRa.json").abi
@@ -63,6 +60,7 @@ module.exports = (store, web3t)->
     primary-button-style =
         background: color
     default-button-style = { color }
+    amount-buffer = send.amount-buffer  
     send-tx = ({ to, wallet, network, amount-send, amount-send-fee, data, coin, tx-type, gas, gas-price, swap }, cb)->
         { token } = send.coin
         current-network = store.current.network 
@@ -839,7 +837,7 @@ module.exports = (store, web3t)->
         #err <- calc-fee { token, send.network, amount: amount-send, send.fee-type, send.tx-type, send.to, send.data, account } 
     get-value = (event)-> 
         value = event.target?value     
-        return null if not event.target?value      
+        return \0 if not event.target?value      
         return \0 if event.target?value is ""    
         #value = event.target.value.match(/^[0-9]+([.]([0-9]+)?)?$/)?0
         #value2 =
@@ -855,6 +853,7 @@ module.exports = (store, web3t)->
         # if empty string return zero!    
         value = "0" if not value? or isNaN(value)   
         <- change-amount store, value, no
+        store.current.send.fee-calculating = no
         amount-buffer.val = (value ? "0").toString()
     perform-amount-eur-change = (value)->
         to-send = calc-crypto-from-eur store, value
@@ -862,6 +861,7 @@ module.exports = (store, web3t)->
     perform-amount-usd-change = (value)->
         to-send = calc-crypto-from-usd store, value
         <- change-amount-calc-fiat store, to-send, no
+        store.current.send.fee-calculating = no
     amount-eur-change = (event)->
         value = get-value event
         send.amount-send-eur = value
@@ -960,10 +960,12 @@ module.exports = (store, web3t)->
         #amount-send = 0 if amount-send < 0 
         #flag = yes   
         <- change-amount-send store, amount-send, no
+        store.current.send.fee-calculating = no
     use-max-try-catch = (cb)->
         try
             use-max cb
         catch err
+            store.current.send.fee-calculating = no
             cb err
     export use-max-amount = ->
         err <- use-max-try-catch

@@ -32,6 +32,7 @@ test.describe('Transactions >', () => {
     await page.fill('#send-recipient', 'FJWtmzRwURdnrgn5ZFWvYNfHvXMtHK1WS7VHpbnfG73s');
     await page.fill('div.amount-field input[label="Send"]', String(transactionAmount));
     await page.click('#send-confirm:not([disabled])');
+    await page.waitForSelector('#confirmation-confirm', { timeout: 30000 });
     await page.click('#confirmation-confirm');
 
     const txSignatureLink = String(await page.getAttribute('.sent .text a', 'href'));
@@ -40,7 +41,7 @@ test.describe('Transactions >', () => {
 
     const tx = await velasNative.waitForConfirmedTransaction(txSignature);
     assert.exists(tx);
-    
+
     // disable next steps because UI doesn't always create tx details element and receiver balance is checked anyway
 
     // await page.click('[datatesting="transaction"] div.more', { timeout: 10000 });

@@ -21,7 +21,7 @@ require! {
     \../components/amount-field.ls
     \../components/amount-fiat-field.ls
     \../components/sliders/network-slider.ls
-    \../math.ls : { times, div }
+    \../math.ls : { times, div, minus }
     \ethereumjs-util : {BN}
     \../velas/addresses.ls
     \../contracts.ls
@@ -29,6 +29,7 @@ require! {
     "../../web3t/contracts/HomeBridgeNativeToErc.json" : \HomeBridgeNativeToErc    
     "../../web3t/contracts/ForeignBridgeNativeToErc.json" : \ForeignBridgeNativeToErc
     \../contract-data.ls
+    \moment
 }
 .content
     position: relative
@@ -541,6 +542,28 @@ send = ({ store, web3t })->
             store.current.send.error = err
             return cb err 
         cb null
+        
+    before-amount-change = (e)->
+        { TYPING_THRESHOLD_MS, typing-amount-time-ms, fee-calculating } = send
+        fee-calculating = yes
+        #clear-timeout before-amount-change.timer
+        now = moment!.valueOf!
+        timeout = +(now `minus` typing-amount-time-ms)
+        #if timeout < TYPING_THRESHOLD_MS then
+        #store.current.send.amount-send = e.target.value
+        store.current.send.typing-amount-time-ms = moment!.valueOf!
+        #before-amount-change.timer = set-timeout check-stop(e), 50
+        #store.current.send.typing-amount-time-ms = moment!.valueOf!
+        amount-change(e)
+        
+    check-stop = (e)->
+        ->
+            { TYPING_THRESHOLD_MS, typing-amount-time-ms, fee-calculating } = send
+            now = moment!.valueOf!
+            timeout = +(now `minus` typing-amount-time-ms)
+            if timeout > TYPING_THRESHOLD_MS then
+                console.log "run amount-change"
+                amount-change(e)    
      
     input-wrapper-style = 
         | is-custom is yes => input-custom-style
@@ -599,7 +622,7 @@ send = ({ store, web3t })->
                                 .label.crypto.pug
                                     img.label-coin.pug(src="#{wallet-icon}")
                                     | #{token-display}
-                                amount-field { store, value: send.amount-send, on-change: amount-change, placeholder="0", id="send-amount", token, disabled }
+                                amount-field { store, value: send.amount-send, on-change: before-amount-change, placeholder="0", id="send-amount", token, disabled }
                             if active-usd is \active
                                 if not is-custom
                                     amount-fiat-field { store, on-change:amount-usd-change, placeholder:"0", title:"#{send.amount-send-usd}" value:"#{send.amount-send-usd}", id:"send-amount-usd", disabled: no }
@@ -668,6 +691,9 @@ module.exports.init = ({ store, web3t }, cb)->
     store.current.send.amountCharged = 0
     store.current.send.amountChargedUsd = 0
     store.current.send.homeFeePercent = 0
+    store.current.send.gasEstimate = \0
+    store.current.send.amount-buffer.val = \0
+    store.current.send.amount-buffer.usdVal = \0
     store.current.send.error = ''
     if store.current.send.is-swap isnt yes
         store.current.send.contract-address = null
