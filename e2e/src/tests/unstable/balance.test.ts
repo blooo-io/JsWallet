@@ -7,6 +7,8 @@ import { Auth } from '../../screens/auth';
 import { Currency, WalletsScreen } from '../../screens/wallets';
 import { data } from '../../test-data';
 import { helpers } from '../../tools/helpers';
+import balancesAPI from '../../api/balances-api';
+import { log } from '../../tools/logger';
 
 let auth: Auth;
 let walletsScreen: WalletsScreen;
@@ -57,8 +59,14 @@ test.describe('Balance >', () => {
           assert.equal(newAmountOfTokens, helpers.toFixed((VLXNativeBalanceOnBlockchain + balanceUpdateAmount), 6), 'Velas Native wallet balance was not updated after funding it');
           break;
         case 'Bitcoin':
+          try {
+            await balancesAPI.bitcore();
+            assert.equal(amountOfTokens, '0.03484302');
+          } catch (e) {
+            log.debug(e);
+            log.warn(`Bitcoin balance check skipped because of 3rd party service is down`);
+          }
           // TODO: make api request before to ckeck if service works; then uncomment next line
-          // assert.equal(amountOfTokens, '0.03484302');
           break;
         case 'Velas EVM':
           assert.equal(amountOfTokens, '13');

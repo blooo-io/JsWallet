@@ -52,6 +52,8 @@ calc-fee-before-send = ({ store, query, fast }, cb)->
 
 change-amount-generic = (field)-> (store, amount-send, fast, cb)->
     send = store.current[field]
+    /* Prevent call onChange twice */
+    amount-buffer = store.current.send.amount-buffer
     { wallet } = send
     { token } = send.coin
     { wallets } = store.current.account
@@ -99,7 +101,8 @@ change-amount-generic = (field)-> (store, amount-send, fast, cb)->
     err, calced-fee <- calc-fee-before-send { store, query, fast }
     console.error err if err?
     send.error = err if err?
-    return cb err if err?
+    calced-fee = 0 if err?
+    #return cb err if err?
     tx-fee =
         | fee-type is \custom => send.amount-send-fee
         | calced-fee? => calced-fee
