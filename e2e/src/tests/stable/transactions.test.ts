@@ -7,6 +7,7 @@ import { Auth } from '../../screens/auth';
 import { WalletsScreen } from '../../screens/wallets';
 import { data } from '../../test-data';
 import { helpers } from '../../tools/helpers';
+import { infura } from "../../api/explorers-api";
 
 let auth: Auth;
 let walletsScreen: WalletsScreen;
@@ -21,32 +22,19 @@ test.describe.parallel('Transactions', () => {
     await walletsScreen.waitForWalletsDataLoaded();
   });
 
-  test('Send VLX native', async ({ page }) => {
+  test('Send VLX native', async () => {
+    await walletsScreen.addToken('token-vlx_native');
+
     const receiverInitialBalance = await velasNative.getBalance(data.wallets.fundsReceiver.address);
     const senderInitialBalance = await velasNative.getBalance(data.wallets.txSender.address);
     const transactionAmount = 0.0001;
 
-    await walletsScreen.selectWallet('token-vlx_native');
-    await page.click('#wallets-send');
-    await page.fill('#send-recipient', 'FJWtmzRwURdnrgn5ZFWvYNfHvXMtHK1WS7VHpbnfG73s');
-    await page.fill('div.amount-field input[label="Send"]', String(transactionAmount));
-    await page.click('#send-confirm:not([disabled])');
-    await page.waitForSelector('#confirmation-confirm', { timeout: 30000 });
-    await page.click('#confirmation-confirm');
-
-    const txSignatureLink = await page.getAttribute('.sent .text a', 'href');
-    if (!txSignatureLink) throw new Error('No txSignatureLink');
-    const txSignature = txSignatureLink.replace('https://native.velas.com/tx/', '');
-    if (!txSignature) throw new Error('Cannot get transaction signature from tx link');
+    await walletsScreen.sendTx('token-vlx_native', 'FJWtmzRwURdnrgn5ZFWvYNfHvXMtHK1WS7VHpbnfG73s', transactionAmount);
+    
+    const txSignature = await walletsScreen.getTxHashFromTxlink();
 
     const tx = await velasNative.waitForConfirmedTransaction(txSignature);
     assert.exists(tx);
-
-    // disable next steps because UI doesn't always create tx details element and receiver balance is checked anyway
-
-    // await page.click('[datatesting="transaction"] div.more', { timeout: 10000 });
-    // const receiverAddress = (await page.getAttribute('[datatesting="transaction"] .address-holder a[data-original]', 'data-original'))?.trim();
-    // assert.equal(receiverAddress, data.wallets.fundsReceiver.address);
 
     const receiverFinalBalance = await velasNative.getBalance(data.wallets.fundsReceiver.address);
     assert.equal(helpers.toFixed(receiverFinalBalance.VLX, 6), helpers.toFixed((receiverInitialBalance.VLX + transactionAmount), 6));
@@ -55,52 +43,35 @@ test.describe.parallel('Transactions', () => {
     assert.isBelow(senderFinalBalance.VLX, senderInitialBalance.VLX - transactionAmount, 'Final sender balance is not below the initial sender balance');
   });
 
+  // TODO: network request error
   test.skip('Send BTC', async ({ page }) => {
-    // TODO: network request error
-    await walletsScreen.selectWallet('token-btc');
-    await page.click('#wallets-send');
-    await page.fill('#send-recipient', 'mvvFj8fbFpL61S2HyhvcqEHjT2ThB1f78j', { timeout: 15000 }); //accound with index 2
-    await page.fill('div.amount-field input[label="Send"]', '0.00001');
-    await page.click('#send-confirm:not([disabled])');
-    await page.click('#confirmation-confirm');
+    await walletsScreen.addToken('token-btc');
+
+    await walletsScreen.sendTx('token-btc', 'mvvFj8fbFpL61S2HyhvcqEHjT2ThB1f78j', 0.00001);
+
+    // TODO: btc chain api
     const txSignatureLink = await page.getAttribute('.sent .text a', 'href');
     if (!txSignatureLink) throw new Error('No txSignatureLink');
     assert.isTrue(txSignatureLink.includes('https://bitpay.com/insight/#/BTC/testnet/'));
   });
 
+  // TODO: network request error
   test.skip('Send LTC', async ({ page }) => {
-    // TODO: network request error
-    await walletsScreen.addWalletsPopup.open();
-    await walletsScreen.addWalletsPopup.add('token-ltc');
-    await walletsScreen.waitForWalletsDataLoaded();
+    await walletsScreen.addToken('token-ltc');
 
-    await walletsScreen.selectWallet('token-ltc');
-    await page.click('#wallets-send', { timeout: 10000 });
-    await page.fill('#send-recipient', 'mvvFj8fbFpL61S2HyhvcqEHjT2ThB1f78j'); //accound with index 2
-    await page.fill('div.amount-field input[label="Send"]', '0.00001');
-    await page.click('#send-confirm:not([disabled])');
-    await page.click('#confirmation-confirm');
+    await walletsScreen.sendTx('token-ltc', 'mvvFj8fbFpL61S2HyhvcqEHjT2ThB1f78j', 0.00001);
 
+    // TODO: ltc chain api
     const txSignatureLink = await page.getAttribute('.sent .text a', 'href');
     if (!txSignatureLink) throw new Error('No txSignatureLink');
     assert.isTrue(txSignatureLink.includes('https://testnet.litecore.io/'));
   });
 
-  test('Send ETH', async ({ page }) => {
-    await walletsScreen.waitForWalletsDataLoaded();
+  test('Send ETH Legacy', async () => {
+    await walletsScreen.addToken('token-eth_legacy');
 
-    const transactionAmount = 0.00001;
-
-    await walletsScreen.selectWallet('token-eth_legacy');
-    if (!await page.waitForSelector('#wallets-send')) throw new Error('Probably ETH wallet is disabled.');
-    await page.click('#wallets-send');
-    await page.fill('#send-recipient', '0xb322f01cb6a191974e7291600a4dc1b46f00f752'); //accound with index 2
-    await page.fill('div.amount-field input[label="Send"]', String(transactionAmount));
-    await page.click('#send-confirm:not([disabled])');
-    await page.click('#confirmation-confirm');
-
-    const txSignatureLink = await page.getAttribute('.sent .text a', 'href');
-    if (!txSignatureLink) throw new Error('No txSignatureLink');
-    assert.isTrue(txSignatureLink?.includes('https://ropsten.etherscan.io/'));
+    await walletsScreen.sendTx('token-eth_legacy', '0xb322f01cb6a191974e7291600a4dc1b46f00f752', 0.00001);
+    const txSignature = await walletsScreen.getTxHashFromTxlink();
+    await infura.waitForConfirmedTx(txSignature, 180000);
   });
 });

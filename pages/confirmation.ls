@@ -3,7 +3,7 @@ require! {
     \../get-primary-info.ls
     \../get-lang.ls
     \./icon.ls
-    \../icons.ls 
+    \../icons.ls
     \../components/text-field.ls
     \../components/button.ls
     \../copy.ls
@@ -225,7 +225,7 @@ alert-modal = (store)->
     .pug.confirmation
         .pug.confirmation-body(style=confirmation)
             .pug.header(style=confirmation-style) Alert
-            .pug.text(style=confirmation-style2) 
+            .pug.text(style=confirmation-style2)
                 text-rows |> map build-text
             .pug.buttons
                 button.pug.button(on-click=cancel style=button-style id="alert-close")
@@ -295,7 +295,7 @@ confirmation-modal = (store)->
         color: style.app.text
         border-bottom: "1px solid #{style.app.border}"
     lang = get-lang store
-    title = 
+    title =
         | (store.current.confirmation ? "").indexOf("You can add this token back in the future by going to “Add custom token”") > -1 => "Hide Token?"
         | _ => lang.confirmation
     .pug.confirmation
@@ -307,10 +307,10 @@ confirmation-modal = (store)->
                 minutes =
                     | refer-to in <[ eth vlx_erc20 ]> => 30
                     | refer-to in <[ bsc_vlx busd ]> => 10
-                    | refer-to is \vlx_huobi => 10     
+                    | refer-to is \vlx_huobi => 10
                     | _ => 0
-                if minutes > 0 
-                    text = "Depending on the network congestions it may take a long time to finish swap. Average confirmation time is ~#{minutes} min."  
+                if minutes > 0
+                    text = "Depending on the network congestions it may take a long time to finish swap. Average confirmation time is ~#{minutes} min."
                     .pug.notification(style=notification-style)
                         p.pug(style=text-style)  #{text}
             .pug.buttons
@@ -322,7 +322,7 @@ confirmation-modal = (store)->
                     span.cancel.pug
                         img.icon-svg-cancel.pug(src="#{icons.close}")
                         | #{lang.cancel}
-                        
+
 swap-confirmation-modal = (store)->
     return null if typeof! store.current.swap-confirmation isnt \String
     confirm = ->
@@ -350,24 +350,24 @@ swap-confirmation-modal = (store)->
         color: style.app.text
         border-bottom: "1px solid #{style.app.border}"
     { amount-send, tokenFrom, amount-receive, tokenTo, bridgeFee, homeBridge, foreignBridge, fromNetwork, toNetwork} = store.current.swap-confirmation
-    # "Please confirm that you would like to send #{amount-send} #{token-display} from #{walletGroup} to receive #{amount-receive} #{token-display} on #{receiverGroup}." 
+    # "Please confirm that you would like to send #{amount-send} #{token-display} from #{walletGroup} to receive #{amount-receive} #{token-display} on #{receiverGroup}."
     lang = get-lang store
     .pug.confirmation
         .pug.confirmation-body(style=confirmation)
             .pug.header(style=confirmation-style) #{lang.confirmation}
-            .pug.text(style=confirmation-style2) 
+            .pug.text(style=confirmation-style2)
                 span.pug Please confirm that you would like to send
-                span.pug.amount #{amount-send} 
+                span.pug.amount #{amount-send}
                 span.pug.token #{tokenFrom}
                 span.pug from
                 span.pug.network #{fromNetwork}
                 span.pug to receive
-                span.pug.amount #{amount-receive} 
+                span.pug.amount #{amount-receive}
                 span.pug.token #{tokenTo}
                 span.pug on
                 span.pug.network #{toNetwork}
-                 
-                
+
+
             .pug.buttons
                 button.pug.button(on-click=confirm style=button-style id="confirmation-confirm")
                     span.apply.pug
@@ -377,7 +377,7 @@ swap-confirmation-modal = (store)->
                     span.cancel.pug
                         img.icon-svg-cancel.pug(src="#{icons.close}")
                         | #{lang.cancel}
-                        
+
 prompt-modal = (store)->
     return null if typeof! store.current.prompt isnt \String
     confirm = ->
@@ -462,7 +462,7 @@ prompt-modal2 = (store)->
         background: style.app.input
         color: style.app.text
         border: "0"
-    input-holder-style = 
+    input-holder-style =
         max-width: '250px'
         margin: 'auto'
     button-style=
@@ -482,7 +482,7 @@ prompt-modal2 = (store)->
     max-amount-container =
         text-align: "left"
     use-max-amount = !->
-        store.current.prompt-answer = 
+        store.current.prompt-answer =
             | not wallet? => 0
             | _ => Math.floor(wallet.balance `minus` 1)
     .pug.confirmation
@@ -525,7 +525,7 @@ prompt-modal3 = (store)->
         callback null if typeof! callback is \Function
         store.current.prompt-answer = ""
     amount-change = (e)->
-        balance = chosenAccount.balanceRaw `div` (10^9)      
+        balance = chosenAccount.balanceRaw `div` (10^9)
         max-amount = Math.floor(balance `minus` min_stake)
         amount =
             | e.target.value > max-amount => max-amount
@@ -540,7 +540,7 @@ prompt-modal3 = (store)->
         background: style.app.input
         color: style.app.text
         border: "0"
-    input-holder-style = 
+    input-holder-style =
         max-width: '250px'
         margin: 'auto'
     button-style=
@@ -560,7 +560,7 @@ prompt-modal3 = (store)->
     max-amount-container =
         text-align: "left"
     use-max-amount = !->
-        store.current.prompt-answer = 
+        store.current.prompt-answer =
             | not chosenAccount? => 0
             | _ => balanceRaw `minus` active_stake `minus` min_stake
     .pug.confirmation
@@ -569,8 +569,6 @@ prompt-modal3 = (store)->
             .pug.text(style=style=confirmation-style)
             .pug(style=input-holder-style)
                 amount-field { store, token: "vlx_native", value: "#{round5edit store.current.prompt-answer}", on-change: amount-change, placeholder="0", id="prompt-input" }
-                .pug.max-amount(style=max-amount-container)
-                    button.pug.send-all(on-click=use-max-amount style=button-primary3-style type="button" id="send-max") #{lang.use-max}
             .pug.buttons
                 button.pug.button(on-click=confirm style=button-style id="prompt-confirm")
                     span.apply.pug
@@ -673,26 +671,26 @@ prompt-choose-token-modal = (store)->
         #on-click = ->
             #store.current.prompt-answer = token
             #data.token = name
-            #copy-to-clipboard wallet.private-key 
+            #copy-to-clipboard wallet.private-key
             #notify store, "Your Private KEY is copied into your clipboard", cb
         token-network = item?network?group
         active-class = if store.current.prompt-answer is token then "active" else ""
         token = (wallet?coin?name ? "").to-upper-case!
         li.pug.lang-item(style=optionStyle class="#{active-class}")
-            .pug        
+            .pug
                 CopyToClipboard.pug(text="#{wallet.private-key}" on-copy=copied-pk-inform(store) style=icon2-style)
                     .pug
                         img.pug(src="#{image}" style=imgStyle)
-                        span.token-name.pug #{name} 
+                        span.token-name.pug #{name}
                         span.pug.network #{token-network} Network
-    input-style = 
+    input-style =
         position: "relative"
         text-align: "center"
         display: "block"
         color: "rgb(70 70 70)"
         width: "100% !important"
     disabled-layout-style =
-        z-index: 1 
+        z-index: 1
         background: "transparent"
         position: "absolute"
         top: 0
@@ -700,10 +698,10 @@ prompt-choose-token-modal = (store)->
         left: 0
         right: 0
         width: "100%"
-    tokens-drop-style = 
+    tokens-drop-style =
         max-height: "300px"
         overflow: "scroll"
-    button-section-style = 
+    button-section-style =
         max-width: "500px"
         margin: "auto"
     prompt-answer = store.current.prompt-answer ? null
@@ -767,7 +765,7 @@ prompt-password-modal = (store)->
             .pug.header(style=style=confirmation-style) #{lang.confirmation}
             .pug.text(style=style=confirmation-style) #{store.current.prompt-password}
             .pug.pin-input
-                text-field { ref:(c)->{ a = focus-input(c)}, store, type: 'password' value: store.current.prompt-password-answer, placeholder: "", on-change: change-input , on-key-down: catch-key, id="prompt-input" }  
+                text-field { ref:(c)->{ a = focus-input(c)}, store, type: 'password' value: store.current.prompt-password-answer, placeholder: "", on-change: change-input , on-key-down: catch-key, id="prompt-input" }
             .pug.buttons
                 button.pug.button(on-click=confirm style=button-style id="prompt-confirm")
                     span.apply.pug
@@ -777,12 +775,12 @@ prompt-password-modal = (store)->
                     span.cancel.pug
                         img.icon-svg-cancel.pug(src="#{icons.close}")
                         | #{lang.cancel}
-                        
+
 $network-details-modal = (store)->
-    return null if store.current.current-network-details.show isnt yes 
+    return null if store.current.current-network-details.show isnt yes
     cancel = ->
         store.current.current-network-details.show = no
-    
+
     style = get-primary-info store
     table-item-style-title=
         flex: 1
@@ -790,9 +788,9 @@ $network-details-modal = (store)->
         background: style.app.background
         background-color: style.app.bgspare
         color: style.app.text
-        padding: "20px" 
+        padding: "20px"
         text-align: "left"
-    close-button-style = 
+    close-button-style =
         float: "right"
         padding: "5px"
         background: "transparent"
@@ -821,7 +819,7 @@ $network-details-modal = (store)->
     maxPerTx   = round-human(maxPerTx,   {decimals: 2})
     remaining  = round-human(remainingDailyLimit,   {decimals: 2})
     currency = (nickname ? "").to-upper-case!
-      
+
     from-network = (name ? "").to-upper-case!
     to-network   = (wallet-to.coin.name ? "").to-upper-case!
     title = "Swap from #{from-network} to #{to-network}"
@@ -834,27 +832,27 @@ $network-details-modal = (store)->
             .pug.header(style=style=confirmation-style) #{title}
             .pug.table(style=style=confirmation-style)
                 .table-item.pug(style=table-item-style)
-                    .title.h5.pug(style=table-item-style-title) Remaining Daily Quota 
-                    .value.pug 
+                    .title.h5.pug(style=table-item-style-title) Remaining Daily Quota
+                    .value.pug
                         | #{remaining}
                         | #{currency}
                 .table-item.pug(style=table-item-style)
                     .title.h5.pug(style=table-item-style-title) Maximum Amount Per Transaction
-                    .value.pug 
+                    .value.pug
                         | #{maxPerTx}
                         | #{currency}
                 .table-item.pug(style=table-item-style)
                     .title.h5.pug(style=table-item-style-title) Minimum Amount Per Transaction
                     .value.pug
-                        | #{minPerTx} 
+                        | #{minPerTx}
                         | #{currency}
                 if +homeFeePercent > 0
                     .table-item.pug(style=table-item-style)
                         .title.h5.pug(style=table-item-style-title) Bridge fee
-                        .value.pug(style=bridge-fee-style) #{bridgeFeePercent} %   
-            
-                        
-                        
+                        .value.pug(style=bridge-fee-style) #{bridgeFeePercent} %
+
+
+
 export confirmation-control = (store)->
     #for situation when we ask peen before action. this window should be hidden
     return null if store.current.page-pin?
@@ -900,5 +898,5 @@ export alert = (store, text, cb)->
     state.callback = cb
 export network-details-modal = ->
     store.current.current-network-details.show = yes
-   
+
 window.confirm-state = state

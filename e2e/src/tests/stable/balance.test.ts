@@ -68,7 +68,7 @@ test.describe('Balance', () => {
           }
           break;
         case 'token-vlx_evm':
-          assert.equal(amountOfTokens, '13');
+          assert.equal(amountOfTokens, '11.99987802');
           break;
         case 'token-ltc':
           // ltc testnet is down

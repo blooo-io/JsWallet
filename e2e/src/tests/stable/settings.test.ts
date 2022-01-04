@@ -96,7 +96,7 @@ test.describe.parallel('Settings', () => {
       const language = languages[i];
       log.info(language);
       // click languages button, change after devs add missing IDs to settings page
-      await page.click('.settings button:nth-of-type(1)');
+      await page.click('#switch-language .btn');
 
       const fullLanguageName = headerTexts[language][1];
       await page.click(`.lang-item:has-text("${fullLanguageName}")`);

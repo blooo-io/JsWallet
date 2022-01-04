@@ -171,7 +171,9 @@ export class WalletsScreen extends BaseScreen {
       await this.page.click('.header .button.lock.mt-5');
     },
     add: async (tokenName: Currency) => {
-      await this.page.click(`#add-${tokenName} button`);
+      const addTokenButton = await this.page.$(`#add-${tokenName} button`);
+      await addTokenButton?.scrollIntoViewIfNeeded();
+      await addTokenButton?.click();
     },
   };
 
@@ -201,9 +203,11 @@ export class WalletsScreen extends BaseScreen {
       await this.swap.fill(String(transactionAmount));
     }
 
+    // wait for amount error disappears
+    await this.page.waitForTimeout(300);
     await this.swap.confirm();
   }
-  
+
   private async clickSwapButton(): Promise<void> {
     await this.page.waitForSelector('.with-swap #wallet-swap');
     for (let i = 0; i < 5; i++) {
@@ -276,9 +280,11 @@ export class WalletsScreen extends BaseScreen {
 
       let confirmationAlert = await this.page.$('#confirmation-confirm');
       let counter = 0;
+
+      // TODO: rewrite; click should not be retried
       while (!confirmationAlert && counter < 3) {
         try {
-          await this.page.click('#confirmation-confirm', {timeout: 5000});
+          await this.page.click('#confirmation-confirm', { timeout: 5000 });
           return;
         } catch {
           counter++;
@@ -286,7 +292,7 @@ export class WalletsScreen extends BaseScreen {
           log.debug(`There was attempt to click the Send button but no confirmation alert, retry and wait for confirmation...`)
         }
       }
-      await this.page.waitForSelector('div.sent');
+      await this.page.waitForSelector('.sent .text a:not([href=""])', { timeout: 30000 });
     },
   };
 
@@ -484,5 +490,15 @@ export class WalletsScreen extends BaseScreen {
       throw new Error('Cannot get transaction signature from tx link');
     log.debug(`Obtained tx signature: ${txSignature}`);
     return txSignature;
+  }
+
+  async sendTx(fromToken: Currency, toAddress: string, transactionAmount: number): Promise<void> {
+    await this.selectWallet(fromToken);
+    await this.page.click('#wallets-send', { timeout: 10000 });
+    await this.page.fill('#send-recipient', toAddress);
+    await this.page.fill('div.amount-field input[label="Send"]', String(transactionAmount));
+    await this.page.click('#send-confirm:not([disabled])');
+    await this.page.waitForSelector('#confirmation-confirm', { timeout: 30000 });
+    await this.page.click('#confirmation-confirm');
   }
 }

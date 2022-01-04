@@ -19,7 +19,7 @@
 Tested with `node --version` v11.10.1
 
 
-### Run wallet locally
+### Install and run wallet locally
 (Works on node 14.16)
 1. `npm i lsxc -g`
 2. `git clone https://github.com/velas/JsWallet`
@@ -31,7 +31,7 @@ Tested with `node --version` v11.10.1
    `cd .. && rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p JsWallet/.compiled-ssr/ && cp -pr web3t/ JsWallet/.compiled-ssr/web3t/`
 6. `cd JsWallet`
 7. `npm run wallet-start`
-8. open `localhost:8080/main-index.html`
+8. open `127.0.0.1:8080/main-index.html`
 
 
 ### Run e2e tests

@@ -27,11 +27,10 @@ test.describe.parallel('Navigation', () => {
       const screen = screens[i];
 
       // check that navigation doesn't get broken by locking screen
-
-      // uncomment after bugfix VLWA-514
-      // await page.click('.menu-item.bottom');
-      // await auth.pinForLoggedOutAcc.typeAndConfirm('111222');
-      // assert.isTrue(await auth.isLoggedIn());
+      
+      await page.click('.menu-item.bottom');
+      await auth.pinForLoggedOutAcc.typeAndConfirm('111222');
+      assert.isTrue(await auth.isLoggedIn());
 
       switch (screen) {
         case 'settings':

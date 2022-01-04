@@ -7,7 +7,7 @@ const config: PlaywrightTestConfig = {
   globalSetup: 'src/pw-helpers/before-hook.ts',
   // globalTeardown: '',
   maxFailures: globalConfig.CI ? 10 : 2,
-  retries: globalConfig.CI ? 2 : 0,
+  retries: globalConfig.CI ? 1 : 0,
   timeout: 240000,
   workers: 2,
   reportSlowTests: { threshold: 120000, max: 0 },
