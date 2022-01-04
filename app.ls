@@ -5,6 +5,7 @@ require! {
     \./pages.ls
     \./pages/header.ls
     \./pages/mobilemenu.ls
+    \./components/alerts/default-alert.ls
     #\./pages/side-menu.ls
     \./pages/left-menu.ls
     #\./pages/banner.ls
@@ -46,7 +47,7 @@ require! {
         border-radius: 10px
     .table-scroll::-webkit-scrollbar-thumb
         border-radius: 10px
-        background: #71748f 
+        background: #71748f
     .table-scroll::-webkit-scrollbar-thumb:hover
         background: #ffffff
         border-radius: 10px
@@ -214,6 +215,7 @@ module.exports = ({ store, web3t })->
             modal-control store, web3t
             confirmation-control store, web3t
             copy-message store, web3t
+            default-alert store
             #banner store, web3t
             if no
                 if store.current.device is \mobile

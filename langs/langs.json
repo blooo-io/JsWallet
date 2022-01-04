@@ -828,7 +828,7 @@
             "Comisión",
             "手续费",
             "회비",
-            "رسوم"   
+            "رسوم"
         ],
         "delete": [
             "delete",
@@ -3619,6 +3619,36 @@
             "O le gbe diẹ sii nipasẹ ṣiṣẹda awọn iroyin tuntun",
             "Bạn có thể stake nhiều hơn bằng cách tạo tài khoản mới",
             "आप नए खाते बनाकर अधिक दांव लगा सकते हैं"
+        ],
+        "errorParseTitle": [
+            "Error 360",
+            "Ошибка 360",
+            "Помилка 360",
+            "Error 360",
+            "Error 360",
+            "Error 360",
+            "Error 360",
+            "Error 360",
+            "Error 360",
+            "Error 360",
+            "Error 360",
+            "Error 360",
+            "Error 360"
+        ],
+        "errorParseMessage": [
+            "Please retry later or  write to our support and we will figure it out.",
+            "Повторите попытку позже или напишите в нашу службу поддержки, и мы разберемся с этим.",
+            "Повторіть спробу пізніше або напишіть у нашу службу підтримки, і ми розберемося.",
+            "Please retry later or  write to our support and we will figure it out.",
+            "Please retry later or  write to our support and we will figure it out.",
+            "Please retry later or  write to our support and we will figure it out.",
+            "Please retry later or  write to our support and we will figure it out.",
+            "Please retry later or  write to our support and we will figure it out.",
+            "Please retry later or  write to our support and we will figure it out.",
+            "Please retry later or  write to our support and we will figure it out.",
+            "Please retry later or  write to our support and we will figure it out.",
+            "Please retry later or  write to our support and we will figure it out.",
+            "Please retry later or  write to our support and we will figure it out."
         ]
     }
 }

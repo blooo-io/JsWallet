@@ -28,7 +28,7 @@ require! {
     \../velas/addresses.ls
     \../contracts.ls
     \../swaping/networks.ls : \token-networks
-    "../../web3t/contracts/HomeBridgeNativeToErc.json" : \HomeBridgeNativeToErc    
+    "../../web3t/contracts/HomeBridgeNativeToErc.json" : \HomeBridgeNativeToErc
     "../../web3t/contracts/ForeignBridgeNativeToErc.json" : \ForeignBridgeNativeToErc
     \../contract-data.ls
     \moment
@@ -45,10 +45,10 @@ require! {
     max-width: none !important
     height: 100vh
     display: flex !important
-    flex-direction: column  
+    flex-direction: column
     align-items: center
     @media(min-height:900px)
-        justify-content: center    
+        justify-content: center
     @media(max-width:800px)
         margin-left: 0 !important
     .icon-svg
@@ -120,12 +120,12 @@ require! {
                 display: inline-block
                 vertical-align: middle
     >.content-body
-        margin-top: 75px    
+        margin-top: 75px
         @import scheme
         color: gray
         padding: 20px 10px
         @media(max-width:800px)
-            margin-top: -5px  
+            margin-top: -5px
         a
             color: #6f6fe2
         >form
@@ -156,8 +156,8 @@ require! {
             margin: auto 10px
             >.form-group
                 &.sender, &.receiver
-                    input 
-                        padding: 0 10px 0 45px 
+                    input
+                        padding: 0 10px 0 45px
                         text-align: left
                 &.sender
                     .address-holder .inner-address-holder
@@ -386,14 +386,14 @@ require! {
             font-size: 12px
             font-weight: 400
             overflow: hidden
-            border-radius: 4px; 
+            border-radius: 4px;
             width: auto;
             min-width: auto;
             display: inline-block;
             line-height: initial;
             margin-top: 7px;
             max-height: initial;
-            
+
             &.visible
                 height: auto
                 padding-top: 2.5px !important
@@ -512,27 +512,27 @@ send = ({ store, web3t })->
     active-eur = active-class \eur
     show-class =
         if store.current.open-menu then \hide else \ ""
-    is-custom = wallet?coin?custom is yes 
-    token-display = 
+    is-custom = wallet?coin?custom is yes
+    token-display =
         | is-custom is yes => (wallet.coin.name ? "").to-upper-case!
         | _ => (wallet.coin.nickname ? "").to-upper-case!
-        
+
     down = (it)->
         (it ? "").to-lower-case!
-       
+
     fee-token-display = fee-token.to-upper-case!
-    fee-coin-image = 
+    fee-coin-image =
         | send.fee-coin-image? => send.fee-coin-image
         |_ => send.coin.image
     go-back-from-send = ->
         send.error = ''
-        go-back!  
+        go-back!
     makeDisabled = send.amount-send <= 0 or store.current.send.fee-calculating is yes
     token = store.current.send.coin.token
     is-swap = store.current.send.is-swap is yes
     send-func = before-send-anyway
-    disabled = not send.to? or send.to.trim!.length is 0 or ((send.error ? "").index-of "address") > -1 
-    placeholder-class = if store.current.send.fee-calculating is yes then "placeholder" else ""   
+    disabled = not send.to? or send.to.trim!.length is 0 or ((send.error ? "").index-of "address") > -1
+    placeholder-class = if store.current.send.fee-calculating is yes then "placeholder" else ""
     receiver-is-swap-contract = contracts.is-swap-contract(store, store.current.send.contract-address)
     visible-error = if send.error? and send.error.length > 0 then "visible" else ""
     get-recipient = (address)->
@@ -540,28 +540,28 @@ send = ({ store, web3t })->
     recipient = get-recipient(send.to)
     title = if store.current.send.is-swap isnt yes then \send else \swap
     homeFeePercent = send.homeFeePercent `times` 100
-    
+
     is-not-bridge = ->
-        { token } = store.current.send.wallet.coin  
+        { token } = store.current.send.wallet.coin
         { chosen-network } = store.current.send
-        chosen-network.refer-to in <[ vlx_evm vlx2 vlx_native ]> and token in <[ vlx_evm vlx2 vlx_native ]> 
-    
+        chosen-network.refer-to in <[ vlx_evm vlx2 vlx_native ]> and token in <[ vlx_evm vlx2 vlx_native ]>
+
     is-swap-pair = ({from, to})->
         { chosen-network, coin, wallet } = store.current.send
         token = coin.token
         token is from and chosen-network.refer-to is to
-    
+
     network-on-change = (cb)->
         err <- getBridgeInfo!
         if err?
-            store.current.send.error = err 
-            return cb err     
+            store.current.send.error = err
+            return cb err
         err <- execute-contract-data { store }
         if err?
             store.current.send.error = err
-            return cb err 
+            return cb err
         cb null
-        
+
     before-amount-change = (e)->
         { TYPING_THRESHOLD_MS, typing-amount-time-ms, fee-calculating } = send
         fee-calculating = yes
@@ -574,7 +574,7 @@ send = ({ store, web3t })->
         #before-amount-change.timer = set-timeout check-stop(e), 50
         #store.current.send.typing-amount-time-ms = moment!.valueOf!
         amount-change(e)
-        
+
     check-stop = (e)->
         ->
             { TYPING_THRESHOLD_MS, typing-amount-time-ms, fee-calculating } = send
@@ -582,15 +582,15 @@ send = ({ store, web3t })->
             timeout = +(now `minus` typing-amount-time-ms)
             if timeout > TYPING_THRESHOLD_MS then
                 console.log "run amount-change"
-                amount-change(e)    
-     
-    input-wrapper-style = 
+                amount-change(e)
+
+    input-wrapper-style =
         | is-custom is yes => input-custom-style
-        | _ => input-style 
-    inline-style = 
+        | _ => input-style
+    inline-style =
         display: "inline"
-        min-width: "30px"  
-    
+        min-width: "30px"
+
     /* Render */
     .pug.content
         loader {loading: store.current.send.checking-allowed, text: "Please wait, approving bridge contract..."}
@@ -648,7 +648,7 @@ send = ({ store, web3t })->
                                     amount-fiat-field { store, on-change:amount-usd-change, placeholder:"0", title:"#{send.amount-send-usd}" value:"#{send.amount-send-usd}", id:"send-amount-usd", disabled: no }
                             if active-eur is \active
                                 .input-wrapper.small.pug(style=amount-style)
-                                    .label.lusd.pug €
+                                    .label.lusd.pug
                                     input.pug.amount-eur(type='text'  style=crypto-background on-change=amount-eur-change placeholder="0" title="#{send.amount-send-eur}" value="#{round-money send.amount-send-eur}" id="send-amount-eur")
                         .pug.usd
                             button.pug.send-all(on-click=use-max-amount style=button-primary3-style type="button" id="send-max") #{lang.use-max}
@@ -659,7 +659,8 @@ send = ({ store, web3t })->
                                     span.pug #{token-display}
                                 if +wallet.pending-sent >0 and no
                                     span.pug.pending #{'(' + pending + ' ' + lang.pending + ')'}
-                        .pug.control-label.not-enough.text-left(title="#{send.error}" class="#{visible-error}") #{send.error}
+                        if not store.current.send.parseError
+                            .pug.control-label.not-enough.text-left(title="#{send.error}" class="#{visible-error}") #{send.error}
                 if is-data
                     form-group \contract-data, 'Data', icon-style, ->
                         .pug.smart-contract(style=input-style) #{show-data!}
@@ -685,10 +686,10 @@ send = ({ store, web3t })->
                                     img.label-coin.pug(src="#{fee-coin-image}")
                                     span.pug(title="#{send.amount-send-fee}") #{fee-token-display}
                                 .pug.usd $ #{round-human send.amount-send-fee-usd}
-                        if send.homeFeePercent? and send.homeFeePercent > 0 
+                        if send.homeFeePercent? and send.homeFeePercent > 0
                             tr.pug.orange.home-fee
-                                td.pug 
-                                    | #{lang.home-fee} 
+                                td.pug
+                                    | #{lang.home-fee}
                                     | (#{homeFeePercent}%)
                                 td.pug
                                     span.pug(title="#{homeFee}") #{round-human homeFee}
@@ -706,7 +707,7 @@ send = ({ store, web3t })->
 
 module.exports = send
 module.exports.init = ({ store, web3t }, cb)->
-    return cb null if not store? or not web3t? 
+    return cb null if not store? or not web3t?
     { execute-contract-data, wallet, getBridgeInfo } = send-funcs store, web3t
     return cb null if not wallet?
     return cb null if send.sending is yes
@@ -720,7 +721,7 @@ module.exports.init = ({ store, web3t }, cb)->
     store.current.send.gasPriceAuto = null
     store.current.send.gas-price-type = \auto
     store.current.send.gas-price-custom-amount = \0
-    
+
     store.current.send.amount-buffer.val = \0
     store.current.send.amount-buffer.usdVal = \0
     store.current.send.error = ''
@@ -728,7 +729,7 @@ module.exports.init = ({ store, web3t }, cb)->
         store.current.send.contract-address = null
     is-swap-contract = contracts.is-swap-contract(store, send.to)
 #    if is-swap-contract then
-#        contract-address = if wallet.coin.token is \vlx2 then web3t.velas.HomeBridgeNativeToErc.address else web3t.velas.ForeignBridgeNativeToErc.address 
+#        contract-address = if wallet.coin.token is \vlx2 then web3t.velas.HomeBridgeNativeToErc.address else web3t.velas.ForeignBridgeNativeToErc.address
 #        store.current.send.to = contract-address
 #        network-type = store.current.network
 #        networks = wallet.coin["#{network-type}s"]
@@ -738,8 +739,8 @@ module.exports.init = ({ store, web3t }, cb)->
     /* If it is Swap! */
     if wallet.network.networks? and (store.current.send.isSwap is yes) then
         $wallets = store.current.account.wallets |> map (-> [it.coin.token, it]) |> pairs-to-obj
-        available-networks = 
-            wallet.network.networks 
+        available-networks =
+            wallet.network.networks
                 |> obj-to-pairs
                 |> filter (-> $wallets[it[1]?referTo]?)
                 |> filter (-> (not it[1]?disabled?) or it[1]?disabled is no)
@@ -747,40 +748,40 @@ module.exports.init = ({ store, web3t }, cb)->
         wallet-swap-networks-ids = Object.keys(available-networks)
         if wallet-swap-networks-ids.length > 0
             default-network = wallet.network.networks[wallet-swap-networks-ids[0]]
-            store.current.send.chosenNetwork = default-network 
-            store.current.send.to = token-networks.get-default-recipient-address(store)  
+            store.current.send.chosenNetwork = default-network
+            store.current.send.to = token-networks.get-default-recipient-address(store)
         else
-            console.error "networks prop in #{store.current.send.token} wallet is defined but is empty" 
-    
+            console.error "networks prop in #{store.current.send.token} wallet is defined but is empty"
+
     err <- contract-data({store}).form-contract-data!
     console.log "form-contract-data err: " err if err?
     #return cb err if err?
-    
+
     err <- getBridgeInfo!
     return cb err if err?
-    
+
     { wallets } = wallets-funcs store, web3t
     current-wallet =
         wallets |> find (-> it.coin.token is wallet.coin.token)
     err, fee <- contracts.get-home-network-fee({store, web3t}, store.current.send.to)
     store.current.send.foreign-network-fee = fee
     { wallet } = send-funcs store, web3t
-    store.current.send.fee-coin-image = 
+    store.current.send.fee-coin-image =
         | wallet.network.tx-fee-in? =>
             tx-fee-in-wallet = wallets |> find (-> it.coin.token is wallet.network.tx-fee-in)
             if not tx-fee-in-wallet then
                 store.current.send.error = "Please add #{((wallet.network.tx-fee-in ? "").to-upper-case!)} wallet in order to calculate transaction fee"
-            tx-fee-in-wallet?coin?image ? ""   
-        | _ => wallet.coin.image   
+            tx-fee-in-wallet?coin?image ? ""
+        | _ => wallet.coin.image
     #if wallet.network.txBridgeFeeIn? and (wallet.coin.token isnt wallet.network.txBridgeFeeIn) then
         #bridge-fee-token = wallet.network.txBridgeFeeIn
         #second-wallet = wallets |> find (-> it.coin.token is bridge-fee-token)
         #store.current.send.fee-coin-image = second-wallet?coin?image if second-wallet?coin?image?
-    
+
     { send } = store.current
     account = { wallet.address, wallet.private-key, wallet.balance }
     query = { store, token: wallet.coin.token, to: wallet.address, send.data, send.network, amount: 0, fee-type: \auto, account }
-    
+
     err, result <- calc-fee-before-send { store, query, fast: yes }
     return cb err if err?
 
@@ -788,12 +789,12 @@ module.exports.init = ({ store, web3t }, cb)->
     send.gas-price-auto = result?gas-price ? 0
     send.gas-price-custom-amount = +((result?gas-price ? 0) `div` (10^9))
     send.amount-send-fee = +(result?calced-fee ? 0)
-    
+
     return cb null if current-wallet.address is wallet.address
     return cb null if not wallet?
-    return cb null if not web3t[wallet.coin.token]?   
+    return cb null if not web3t[wallet.coin.token]?
     { send-transaction } = web3t[wallet.coin.token]
     err <- send-transaction { to: "", value: 0 }
     send.sending = false
-    
+
     cb null
