@@ -94,7 +94,6 @@ module.exports = (store, web3t)->
         console.log "send-tx"
         return cb null if not agree
         err, tx <- push-tx { token, tx-type, network, ...tx-data }
-        err = "1 Unexpected token < in JSON at position 0"
         if err?
             if (err.toString()).indexOf("Insufficient priority. Code:-26. Please try to increase fee") then
                 store.current.send.error = err
