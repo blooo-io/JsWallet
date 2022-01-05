@@ -60,7 +60,7 @@ jobs:
 
   docker-build-push:
     name: Build and push (prod)
-    runs-on: build
+    runs-on: ubuntu-latest
     # TODO: if tests will not have invalid fail (fail when should pass) - uncomment next line
     # needs: e2e-tests-local
     outputs:
