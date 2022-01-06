@@ -13,7 +13,6 @@ require! {
     box-sizing: border-box
     color: white
     width: 100%
-    height: 102px
     padding: 10px
     right: 0
     text-align: center
@@ -47,7 +46,6 @@ require! {
         font-weight: 700
         color: white
     .contents
-        height: 35px
 module.exports = (store) ->
     console.log "default-alert " + store.current.send.parseError
     return null if store.current.send.parseError is ''
