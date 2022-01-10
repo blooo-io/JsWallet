@@ -47,7 +47,6 @@ require! {
         color: white
     .contents
 module.exports = (store) ->
-    console.log "default-alert " + store.current.send.parseError
     return null if store.current.send.parseError is ''
     message = null if store.current.send.parseError is ''
     copied-class = ''
@@ -75,4 +74,4 @@ module.exports = (store) ->
             .pug.mb-5 #{lang.errorParseTitle}
             .pug.contents
                 h4.pug #{lang.errorParseMessage}
-                    a.pug(target="_blank" href="https://support.velas.com") https://support.velas.com/
+                    a.pug(target="_blank" href="https://support.velas.com") #{lang.support}
