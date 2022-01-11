@@ -3635,20 +3635,35 @@
             "Error 360",
             "Error 360"
         ],
-        "errorParseMessage": [
-            "Please retry later or  write to our support and we will figure it out.",
-            "Повторите попытку позже или напишите в нашу службу поддержки, и мы разберемся с этим.",
-            "Повторіть спробу пізніше або напишіть у нашу службу підтримки, і ми розберемося.",
-            "Please retry later or  write to our support and we will figure it out.",
-            "Please retry later or  write to our support and we will figure it out.",
-            "Please retry later or  write to our support and we will figure it out.",
-            "Please retry later or  write to our support and we will figure it out.",
-            "Please retry later or  write to our support and we will figure it out.",
-            "Please retry later or  write to our support and we will figure it out.",
-            "Please retry later or  write to our support and we will figure it out.",
-            "Please retry later or  write to our support and we will figure it out.",
-            "Please retry later or  write to our support and we will figure it out.",
-            "Please retry later or  write to our support and we will figure it out."
+        "errorParseMessage1": [
+            "Please retry later or  write to our",
+            "Повторите попытку позже или напишите в нашу",
+            "Повторіть спробу пізніше або напишіть у нашу",
+            "Please retry later or  write to our ",
+            "Please retry later or  write to our ",
+            "Please retry later or  write to our ",
+            "Please retry later or  write to our ",
+            "Please retry later or  write to our ",
+            "Please retry later or  write to our ",
+            "Please retry later or  write to our ",
+            "Please retry later or  write to our ",
+            "Please retry later or  write to our ",
+            "Please retry later or  write to our "
+        ],
+        "errorParseMessage2": [
+            "and we will figure it out.",
+            ", и мы разберемся с этим.",
+            ", і ми розберемося.",
+            "and we will figure it out.",
+            "and we will figure it out.",
+            "and we will figure it out.",
+            "and we will figure it out.",
+            "and we will figure it out.",
+            "and we will figure it out.",
+            "and we will figure it out.",
+            "and we will figure it out.",
+            "and we will figure it out.",
+            "and we will figure it out."
         ]
     }
 }

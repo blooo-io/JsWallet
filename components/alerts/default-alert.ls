@@ -40,12 +40,14 @@ require! {
             width: 13px
     .mb-5
         margin-bottom: 5px
-    h4
+    span
         margin-bottom: 0px
+        font-weight: 700
     a
         font-weight: 700
         color: white
     .contents
+        padding-bottom: 8px
 module.exports = (store) ->
     return null if store.current.send.parseError is ''
     message = null if store.current.send.parseError is ''
@@ -73,5 +75,6 @@ module.exports = (store) ->
         .copied-inner.pug
             .pug.mb-5 #{lang.errorParseTitle}
             .pug.contents
-                h4.pug #{lang.errorParseMessage}
+                span.pug #{lang.errorParseMessage1}
                     a.pug(target="_blank" href="https://support.velas.com") #{lang.support}
+                        span.pug #{lang.errorParseMessage2}
