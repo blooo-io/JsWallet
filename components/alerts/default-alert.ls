@@ -76,5 +76,5 @@ module.exports = (store) ->
             .pug.mb-5 #{lang.errorParseTitle}
             .pug.contents
                 span.pug #{lang.errorParseMessage1}
-                    a.pug(target="_blank" href="https://support.velas.com") #{lang.support}
+                    a.pug(target="_blank" href="https://support.velas.com") #{lang.support.toLowerCase!}
                         span.pug #{lang.errorParseMessage2}
