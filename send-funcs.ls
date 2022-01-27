@@ -1116,7 +1116,7 @@ module.exports = (store, web3t)->
 
         store.current.send.homeDailyLimit = dailyLimit
         store.current.network-details <<<< { dailyLimit, homeFeePercent, minPerTx, maxPerTx, maxAvailablePerTx, remainingDailyLimit }
-        if token isnt \busd
+        if token not in <[ busd usdc usdt_erc20 ]>
             return cb null
 
 
