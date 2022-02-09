@@ -16,13 +16,14 @@ require! {
     \../components/text-field.ls
     \../components/export-import-seed.ls
 }
-checkPasswordNumbers = (val) ->
+
+checkPasswordCyrillic = (val) ->
+    regCyrillic = /^[\u0400-\u04FF]+$/
     lang = get-lang store
-    regNumbers = /^[0-9]*$/
     spin = (localStorage.get-item \spin) || ""
-    if (spin.length)
-        alert(lang.wrongStringNotAllowed) if not regNumbers.test(val)
-        return regNumbers.test(val)
+    if (!spin.length)
+        alert(lang.wrongStringNotAllowed) if regCyrillic.test(val)
+        return regCyrillic.test(val)
     return false
 
 .locked
@@ -277,11 +278,14 @@ input = (store, web3t)->
         if exists!
             check-pin store, web3t
         else
-            if store.current.spin
+            lang = get-lang store
+            spin = (localStorage.get-item \spin) || ""
+            if spin.length
                 return alert(lang.wrong-pin-should) if store.current.pin.length < 4
             else
+                console.log spin
                 return alert(lang.wrong-pin-should) if store.current.pin.length < 6
-                return true if !checkPasswordNumbers(store.current.pin)
+                return true if checkPasswordCyrillic(store.current.pin)
             set store.current.pin
             check-pin store, web3t
             store.current.pin = ""
@@ -351,7 +355,7 @@ setup-button = (store, web3t)->
     { open-language } = menu-funcs store, web3t
     setup = ->
         return alert(lang.wrong-pin-should) if store.current.pin.length < 6
-        return checkPasswordNumbers(store.current.pin)
+        return true if checkPasswordCyrillic(store.current.pin)
         set store.current.pin
         check-pin store, web3t
         store.current.pin = ""
