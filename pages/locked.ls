@@ -277,9 +277,7 @@ input = (store, web3t)->
         if exists!
             check-pin store, web3t
         else
-            console.log("enter", store.current.spin)
             if store.current.spin
-                console.log "if enter"
                 return alert(lang.wrong-pin-should) if store.current.pin.length < 4
             else
                 return alert(lang.wrong-pin-should) if store.current.pin.length < 6
