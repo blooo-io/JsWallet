@@ -17,12 +17,6 @@ jobs:
       - name: checkout JsWallet
         uses: actions/checkout@v2
 
-      
-      - name: check dev domain presence in repo
-        working-directory: ./
-        # {{secrets.SECRET_DOMAIN}}
-        run: grep -Ri randomtextasidj9823 . --exclude-dir node_modules --exclude-dir e2e/node_modules --exclude-dir .git && echo 'The development domain was found in repository code. Source file name is hidden due to security.' && exit 13
-
       - name: get branch name
         run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
         id: get-branch-name
@@ -62,7 +56,20 @@ jobs:
         working-directory: ../
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
 
-
+      - name: check dev domain presence in repo
+        working-directory: ./
+        # {{secrets.SECRET_DOMAIN}}
+        run: |
+          grep -Ri askdfjihf829f32 ./ \
+            --exclude-dir node_modules \
+            --exclude-dir e2e/node_modules \
+            --exclude-dir .git && \
+            --exclude-dir .github && \
+            echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
+            echo 'The development domain was found in repository code.' && \
+            echo 'The source file name is hidden due to security. Please check locally.' && \
+            echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
+            exit 13
 
       - name: delete wallet build cache
         working-directory: ./
