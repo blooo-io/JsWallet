@@ -6,7 +6,7 @@ echo '----------------------'
 echo ${TEST_TEXT}
 echo '----------------------'
 
-grep -Ri ${{secrets.TEST_TEXT}} . --exclude-dir node_modules --exclude-dir e2e/node_modules --exclude-dir .git
+grep -Ri ${TEST_TEXT} . --exclude-dir node_modules --exclude-dir e2e/node_modules --exclude-dir .git
 if [ $? -eq 0 ]
 then
   echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
