@@ -2,7 +2,11 @@
 
 # this script checks if development domain is present in repository code
 
-grep -Ri QWERTY12345 . --exclude-dir node_modules --exclude-dir e2e/node_modules --exclude-dir .git
+echo '----------------------'
+echo ${TEST_TEXT}
+echo '----------------------'
+
+grep -Ri ${TEST_TEXT} . --exclude-dir node_modules --exclude-dir e2e/node_modules --exclude-dir .git
 if [ $? -eq 0 ]
 then
   echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -'
