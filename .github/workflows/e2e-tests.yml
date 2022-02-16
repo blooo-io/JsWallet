@@ -33,13 +33,24 @@ jobs:
         uses: velas/get-pull-request-data@master
 
       - name: SCRIPT
-        run: echo ${{ steps.pr-data.outputs.title }}
+        run: echo ${{ steps.pr-data.outputs.title }} && echo "PR_TITLE=${{ steps.pr-data.outputs.title }}" >> $GITHUB_ENV
+
+  #          - name: set env variable
+  #    run: |
+  #      echo "PROJECT_TO_TEST=$(sh scripts/test.sh)" >> $GITHUB_ENV
+  
+  #  # Then you can use it in your if statement like so 
+  #  - name: Conditionally Run
+  #    if: contains(env.PROJECT_TO_TEST, 'SomeString')
+  #    run: |
+  #      echo "let's run"
+
 
       # - name: SCRIPT
       #   run: echo $(contains('sometextweb3twith', 'web3t'))
 
       - name: try to checkout the same branch for web3t
-        if: contains($steps.pr-data.outputs.title, 'web3t'
+        if: contains(env.PR_TITLE, 'web3t'
         # if: false
         uses: actions/checkout@v2
         # continue-on-error: true
