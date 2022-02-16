@@ -28,7 +28,7 @@ jobs:
           path: .compiled-ssr/web3t
           ref: testnet
 
-      - name: try to checkout web3t, the same branch as JsWallet
+      - name: try to checkout the same branch for web3t
         uses: actions/checkout@v2
         continue-on-error: true
         with:
