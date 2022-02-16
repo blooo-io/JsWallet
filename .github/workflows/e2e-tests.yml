@@ -60,7 +60,7 @@ jobs:
         working-directory: ./
         # {{secrets.SECRET_DOMAIN}}
         run: |
-          grep -Ri askdfjihf829f32 . \
+          grep -Ri askdfjihf829f32 ./ \
           --exclude-dir node_modules \
           --exclude-dir e2e/node_modules \
           --exclude-dir .git \
