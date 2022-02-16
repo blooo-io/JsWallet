@@ -17,6 +17,9 @@ jobs:
       - name: checkout JsWallet
         uses: actions/checkout@v2
 
+      - name: set env var
+        run: echo "TEST_TEXT=${{secrets.TEST_TEXT}}" >> $GITHUB_ENV
+
       - name: check dev domain presence is repo
         working-directory: ./tests
         run: chmod +x ./dev-domain-presence-check.sh && ./dev-domain-presence-check.sh
