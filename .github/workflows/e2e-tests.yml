@@ -21,19 +21,6 @@ jobs:
         run: echo "TEST_TEXT=${{secrets.TEST_TEXT}}" >> $GITHUB_ENV
 
       - name: check dev domain presence is repo
-        working-directory: ./
-        run: |
-          grep -Ri ${{secrets.TEST_TEXT}} . \
-          --exclude-dir node_modules \
-          --exclude-dir e2e/node_modules \
-          --exclude-dir .git || exit 0 && \
-          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
-          echo 'The development domain was found in repository code.' && \
-          echo 'See filename above. File content is hidden due to security.' && \
-          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
-          exit 13
-
-      - name: check dev domain presence is repo
         working-directory: ./tests
         run: chmod +x ./dev-domain-presence-check.sh && ./dev-domain-presence-check.sh
 
@@ -75,6 +62,19 @@ jobs:
       - name: copy web3 side by side to wallet
         working-directory: ../
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
+
+      - name: check dev domain presence is repo
+        working-directory: ./
+        run: |
+          grep -Ri ${{secrets.TEST_TEXT}} . \
+          --exclude-dir node_modules \
+          --exclude-dir e2e/node_modules \
+          --exclude-dir .git || exit 0 && \
+          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
+          echo 'The development domain was found in repository code.' && \
+          echo 'See filename above. File content is hidden due to security.' && \
+          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
+          exit 13
 
       - name: delete wallet build cache
         working-directory: ./
