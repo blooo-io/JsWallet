@@ -63,7 +63,8 @@ jobs:
       - name: check secret domain presence in repo
         working-directory: ./
         run: |
-          grep -Ri {{secrets.SECRET_DOMAIN}} ./ \
+          # grep -Ri {{secrets.SECRET_DOMAIN}} ./ \
+          grep -Ri aksjdfkasjdfkasjdf ./ \
             --exclude-dir node_modules \
             --exclude-dir e2e/node_modules \
             --exclude-dir .git && \
