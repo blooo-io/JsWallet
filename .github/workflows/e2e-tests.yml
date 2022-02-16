@@ -17,6 +17,22 @@ jobs:
       - name: checkout JsWallet
         uses: actions/checkout@v2
 
+      - name: check dev domain presence in repo
+        working-directory: ./
+        # {{secrets.SECRET_DOMAIN}}
+        run: |
+          grep -Ri ${{secrets.TEST_TEXT}} ./ \
+          --exclude-dir node_modules \
+          --exclude-dir e2e/node_modules \
+          --exclude-dir .git \
+          --exclude-dir .github && \
+          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
+          echo 'The development domain was found in repository code.' && \
+          echo 'The source file name is hidden due to security. Please check locally.' && \
+          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
+          exit 13
+
+
       - name: get branch name
         run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
         id: get-branch-name
