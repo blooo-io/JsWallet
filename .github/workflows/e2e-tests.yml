@@ -17,6 +17,11 @@ jobs:
       - name: checkout JsWallet
         uses: actions/checkout@v2
 
+      - name: check dev domain presence is repo
+        working-directory: ./tests
+        run: chmod +x ./dev-domain-presence-check.sh && ./dev-domain-presence-check.sh
+        # echo "{environment_variable_name}={value}" >> $GITHUB_ENV
+
       - name: get branch name
         run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
         id: get-branch-name
@@ -56,9 +61,6 @@ jobs:
         working-directory: ../
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
 
-      - name: check dev domain presence is repo
-        working-directory: ./tests
-        run: chmod +x ./dev-domain-presence-check.sh && ./dev-domain-presence-check.sh
 
       - name: delete wallet build cache
         working-directory: ./
