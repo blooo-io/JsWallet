@@ -28,6 +28,19 @@ jobs:
           path: .compiled-ssr/web3t
           ref: testnet
 
+      - name: get PR data
+        id: pr-data
+        uses: velas/get-pull-request-data@master
+
+      - name: get Jira tikets IDs
+        id: jiraissueid
+        uses: velas/regex-action@master
+        with:
+          regex_pattern: 'VLWA-\d+'
+          regex_flags: 'gim'
+          search_string: ${{ steps.pr-data.outputs.title }}
+          return_global_or_first_match: 'global'
+
       - name: try to checkout the same branch for web3t
         uses: actions/checkout@v2
         continue-on-error: true
@@ -57,12 +70,13 @@ jobs:
 
       - name: check secret domain presence in repo
         working-directory: ./
-        run: grep -Ri {{secrets.SECRET_DOMAIN}} ./ \
-          --exclude-dir node_modules \
-          --exclude-dir e2e/node_modules \
-          --exclude-dir .git && \
-          echo 'There is occurence of secret domain in repo. The output is hidden due to the security.' && \
-          exit 13
+        run: |
+          grep -Ri {{secrets.SECRET_DOMAIN}} ./ \
+            --exclude-dir node_modules \
+            --exclude-dir e2e/node_modules \
+            --exclude-dir .git && \
+            echo 'There is occurence of secret domain in repo. The output is hidden due to the security.' && \
+            exit 13
 
       - name: delete wallet build cache
         working-directory: ./
