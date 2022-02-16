@@ -65,5 +65,3 @@ Please refer to e2e/README.md
 * ETC
 * USDT (+ USDT_ERC20)
 * and other less known
-
-QWERTY12345
