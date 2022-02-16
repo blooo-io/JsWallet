@@ -21,8 +21,11 @@ jobs:
         run: echo "TEST_TEXT=${{secrets.TEST_TEXT}}" >> $GITHUB_ENV
 
       - name: check dev domain presence is repo
-        working-directory: ./tests
-        run: chmod +x ./dev-domain-presence-check.sh && ./dev-domain-presence-check.sh
+        working-directory: ./
+        run: grep -Ri %{{secrets.TEST_TEXT}} . --exclude-dir node_modules --exclude-dir e2e/node_modules --exclude-dir .git
+      # - name: check dev domain presence is repo
+      #   working-directory: ./tests
+      #   run: chmod +x ./dev-domain-presence-check.sh && ./dev-domain-presence-check.sh
         # echo "{environment_variable_name}={value}" >> $GITHUB_ENV
 
       # - name: get branch name
