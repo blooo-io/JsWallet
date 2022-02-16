@@ -20,7 +20,6 @@ jobs:
       - name: check dev domain presence in repo
         working-directory: ./
         # {{secrets.SECRET_DOMAIN}}
-        # QWERTY12345
         run: |
           grep -Ri ${{secrets.TEST_TEXT}} . \
           --exclude-dir node_modules \
