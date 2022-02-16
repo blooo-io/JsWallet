@@ -36,7 +36,7 @@ jobs:
         run: echo ${{ steps.pr-data.outputs.title }} && echo "PR_TITLE=${{ steps.pr-data.outputs.title }}" >> $GITHUB_ENV
 
       - name: try to checkout the same branch for web3t
-        if: contains(env.PR_TITLE, 'web3t')
+        if: contains(steps.pr-data.outputs.title, 'web3t')
         uses: actions/checkout@v2
         continue-on-error: true
         with:
