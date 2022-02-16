@@ -2,7 +2,9 @@
 
 # this script checks if development domain is present in repository code
 
-echo ${{secrets.TEST_TEXT}}
+echo '----------------------'
+echo $(secrets.TEST_TEXT)
+echo '----------------------'
 
 grep -Ri ${{secrets.TEST_TEXT}} . --exclude-dir node_modules --exclude-dir e2e/node_modules --exclude-dir .git
 if [ $? -eq 0 ]
