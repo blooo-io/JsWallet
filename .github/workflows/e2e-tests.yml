@@ -52,10 +52,6 @@ jobs:
         with:
           node-version: '14.x'
 
-      # - uses: joschi/setup-jdk@v2
-      #   with:
-      #     java-version: '8'
-
       - name: install web3t modules
         working-directory: .compiled-ssr/web3t
         run: npm i
