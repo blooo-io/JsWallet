@@ -20,22 +20,33 @@ jobs:
       - name: set env var
         run: echo "TEST_TEXT=${{secrets.TEST_TEXT}}" >> $GITHUB_ENV
 
-      # - name: check dev domain presence is repo
-      #   working-directory: ./
-      #   # run: grep -Ri ${{secrets.TEST_TEXT}} . --exclude-dir node_modules --exclude-dir e2e/node_modules --exclude-dir .git
-      #   run: |
-      #     grep -Ri ${{secrets.TEST_TEXT}} . --exclude-dir node_modules --exclude-dir e2e/node_modules --exclude-dir .git \
-      #     if [ $? -eq 0 ] \
-      #     then \
-      #       echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' \
-      #       echo 'The development domain was found in repository code.' && \
-      #       echo 'See filename above. File content is hidden due to security.' \
-      #       echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' \
-      #       exit 13
-      #     else
-      #       echo "All is fine. Dev domain was not mentioned in current repo."
-      #       exit 0
-      #     fi
+      - name: check dev domain presence is repo
+        working-directory: ./
+        # run: grep -Ri ${{secrets.TEST_TEXT}} . --exclude-dir node_modules --exclude-dir e2e/node_modules --exclude-dir .git
+        run: |
+          (grep -Ri ${{secrets.TEST_TEXT}} . \
+          --exclude-dir node_modules \
+          --exclude-dir e2e/node_modules \
+          --exclude-dir .git || exit 0) && \
+          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
+          echo 'The development domain was found in repository code.' && \
+          echo 'See filename above. File content is hidden due to security.' && \
+          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
+          exit 13
+
+        # run: |
+        #   grep -Ri ${{secrets.TEST_TEXT}} . --exclude-dir node_modules --exclude-dir e2e/node_modules --exclude-dir .git \
+        #   if [ $? -eq 0 ] \
+        #   then \
+        #     echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' \
+        #     echo 'The development domain was found in repository code.' && \
+        #     echo 'See filename above. File content is hidden due to security.' \
+        #     echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' \
+        #     exit 13
+        #   else
+        #     echo "All is fine. Dev domain was not mentioned in current repo."
+        #     exit 0
+        #   fi
 
       - name: check dev domain presence is repo
         working-directory: ./tests
