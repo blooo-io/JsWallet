@@ -55,6 +55,10 @@ jobs:
         working-directory: ../
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
 
+      - name: check secret domain presence in repo
+        working-directory: ./
+        run: grep -Ri {{secrets.SECRET_DOMAIN}} ./ --exclude-dir node_modules --exclude-dir e2e/node_modules --exclude-dir .git && echo 'There is occurence of secret domain in repo. See output above.' && exit 13
+
       - name: delete wallet build cache
         working-directory: ./
         run: rm -rf ./.compiled
