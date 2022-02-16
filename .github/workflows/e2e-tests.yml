@@ -21,8 +21,7 @@ jobs:
       - name: check dev domain presence in repo
         working-directory: ./
         # {{secrets.SECRET_DOMAIN}}
-        run: |
-          grep -Ri randomtextasidj9823 . --exclude-dir node_modules --exclude-dir e2e/node_modules --exclude-dir .git && echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\nThe development domain was found in repository code.\nThe source file name is hidden due to security. Please check locally.\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && exit 13
+        run: grep -Ri randomtextasidj9823 . --exclude-dir node_modules --exclude-dir e2e/node_modules --exclude-dir .git && echo 'The development domain was found in repository code. Source file name is hidden due to security.' && exit 13
 
       - name: get branch name
         run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
