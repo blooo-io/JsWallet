@@ -25,11 +25,10 @@ jobs:
           --exclude-dir node_modules \
           --exclude-dir e2e/node_modules \
           --exclude-dir .git \
-          --exclude-dir .github && \
-          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
+          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
           echo 'The development domain was found in repository code.' && \
-          echo 'The source file name is hidden due to security. Please check locally.' && \
-          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
+          echo 'See filename above. File content is hidden due to security.' && \
+          echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
           exit 13
 
 
