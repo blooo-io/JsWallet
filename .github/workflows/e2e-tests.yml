@@ -50,7 +50,7 @@ jobs:
       #   run: echo $(contains('sometextweb3twith', 'web3t'))
 
       - name: try to checkout the same branch for web3t
-        if: contains(env.PR_TITLE, 'web3t')
+        if: contains($steps.pr-data.outputs.title, 'web3t')
         # if: false
         uses: actions/checkout@v2
         # continue-on-error: true
