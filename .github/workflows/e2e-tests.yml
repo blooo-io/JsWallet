@@ -83,6 +83,10 @@ jobs:
       - name: install test npm modules
         run: npm i
 
+      - name: check token providers in default.conf
+        working-directory: ./
+        run: npm run test:check-token-providers-in-default-conf
+
       - name: blockchain health check
         run: CI=true npm run blockchain-health-check
 
