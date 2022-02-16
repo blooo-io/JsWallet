@@ -32,9 +32,6 @@ jobs:
         id: pr-data
         uses: velas/get-pull-request-data@master
 
-      - name: SCRIPT
-        run: echo ${{ steps.pr-data.outputs.title }} && echo "PR_TITLE=${{ steps.pr-data.outputs.title }}" >> $GITHUB_ENV
-
       - name: try to checkout the same branch for web3t
         if: contains(steps.pr-data.outputs.title, 'web3t')
         uses: actions/checkout@v2
