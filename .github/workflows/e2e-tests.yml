@@ -36,7 +36,7 @@ jobs:
         run: echo ${{ steps.pr-data.outputs.title }}
 
       - name: SCRIPT
-        run: echo contains( ${{ steps.pr-data.outputs.title }}, 'web3t')
+        run: echo $(contains('somestringwithweb3ttext', 'web3t'))
 
       - name: try to checkout the same branch for web3t
         # if: contains( ${{ steps.pr-data.outputs.title }}, 'web3t' )
@@ -78,88 +78,40 @@ jobs:
             echo 'There is occurence of secret domain in repo. The output is hidden due to the security.' && \
             exit 13
 
-      - name: delete wallet build cache
-        working-directory: ./
-        run: rm -rf ./.compiled
+      # - name: delete wallet build cache
+      #   working-directory: ./
+      #   run: rm -rf ./.compiled
 
-      - name: run wallet
-        working-directory: ./
-        run: |
-          npm run wallet-start:no-watch &
-          echo '- - - - - Wallet is started but it takes up to 30 seconds to be up - - - - -'
+      # - name: run wallet
+      #   working-directory: ./
+      #   run: |
+      #     npm run wallet-start:no-watch &
+      #     echo '- - - - - Wallet is started but it takes up to 30 seconds to be up - - - - -'
 
-      - name: install test npm modules
-        run: npm i
+      # - name: install test npm modules
+      #   run: npm i
 
-      - name: blockchain health check
-        run: CI=true npm run blockchain-health-check
+      # - name: blockchain health check
+      #   run: CI=true npm run blockchain-health-check
 
       # - name: balances api health check
       #   run: CI=true npm run balances-api-health-check
 
-      - name: check that wallet has started
-        run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check previous command output ^" && exit 1)
+      # - name: check that wallet has started
+      #   run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check previous command output ^" && exit 1)
 
-      - name: clean previous test report
-        run: rm -rf ./test-report/
+      # - name: clean previous test report
+      #   run: rm -rf ./test-report/
 
-      - name: run tests
-        run: CI=true npm test
+      # - name: run tests
+      #   run: CI=true npm test
 
-      - name: upload artifacts
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-report
-          path: |
-            e2e/test-report/
-            e2e/test-report-swap/
-          retention-days: 7
-
-      # - name: generate allure report
+      # - name: upload artifacts
       #   if: always()
-      #   run: npm run allure:generate
-
-      # - uses: actions/upload-artifact@master
-      #   if: always()
+      #   uses: actions/upload-artifact@v2
       #   with:
-      #     name: allure-results
-      #     path: e2e/allure-results
+      #     name: test-report
+      #     path: |
+      #       e2e/test-report/
+      #       e2e/test-report-swap/
       #     retention-days: 7
-
-      # - name: get allure history
-      #   uses: actions/checkout@v2
-      #   if: always()
-      #   continue-on-error: true
-      #   with:
-      #     ref: gh-pages
-      #     path: gh-pages
-
-      # - name: generates allure report with history
-      #   uses: simple-elf/allure-report-action@master
-      #   if: always()
-      #   id: allure-report
-      #   with:
-      #     allure_results: e2e/allure-results
-      #     gh_pages: gh-pages
-      #     allure_report: allure-report
-      #     allure_history: allure-history
-      #     keep_reports: 20
-
-      # - name: deploy report to Github pages
-      #   if: always()
-      #   uses: peaceiris/actions-gh-pages@v2
-      #   env:
-      #     PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     PUBLISH_BRANCH: gh-pages
-      #     PUBLISH_DIR: allure-history
-
-      # - name: post the link to the report
-      #   if: always()
-      #   uses: Sibz/github-status-action@v1
-      #   with:
-      #       authToken: ${{secrets.GITHUB_TOKEN}}
-      #       context: 'Test report'
-      #       state: 'success'
-      #       sha: ${{ github.event.pull_request.head.sha }}
-      #       target_url: https://velas.github.io/JsWallet/${{ github.run_number }}
