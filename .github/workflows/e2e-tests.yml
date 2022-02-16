@@ -33,7 +33,8 @@ jobs:
         uses: velas/get-pull-request-data@master
 
       - name: try to checkout the same branch for web3t
-        if: contains( ${{ steps.pr-data.outputs.title }}, 'web3t' )
+        # if: contains( ${{ steps.pr-data.outputs.title }}, 'web3t' )
+        if: false
         uses: actions/checkout@v2
         continue-on-error: true
         with:
