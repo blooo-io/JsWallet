@@ -35,20 +35,6 @@ jobs:
       - name: SCRIPT
         run: echo ${{ steps.pr-data.outputs.title }} && echo "PR_TITLE=${{ steps.pr-data.outputs.title }}" >> $GITHUB_ENV
 
-  #          - name: set env variable
-  #    run: |
-  #      echo "PROJECT_TO_TEST=$(sh scripts/test.sh)" >> $GITHUB_ENV
-  
-  #  # Then you can use it in your if statement like so 
-  #  - name: Conditionally Run
-  #    if: contains(env.PROJECT_TO_TEST, 'SomeString')
-  #    run: |
-  #      echo "let's run"
-
-
-      # - name: SCRIPT
-      #   run: echo $(contains('sometextweb3twith', 'web3t'))
-
       - name: try to checkout the same branch for web3t
         if: contains(env.PR_TITLE, 'web3t')
         uses: actions/checkout@v2
@@ -81,43 +67,46 @@ jobs:
             --exclude-dir node_modules \
             --exclude-dir e2e/node_modules \
             --exclude-dir .git && \
-            echo 'There is occurence of secret domain in repo. The output is hidden due to the security.' && \
+            echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
+            echo 'The development only domain was found in repository code.' && \
+            echo 'The source file name is hidden due to security. Please check locally.' && \
+            echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
             exit 13
 
-      # - name: delete wallet build cache
-      #   working-directory: ./
-      #   run: rm -rf ./.compiled
+      - name: delete wallet build cache
+        working-directory: ./
+        run: rm -rf ./.compiled
 
-      # - name: run wallet
-      #   working-directory: ./
-      #   run: |
-      #     npm run wallet-start:no-watch &
-      #     echo '- - - - - Wallet is started but it takes up to 30 seconds to be up - - - - -'
+      - name: run wallet
+        working-directory: ./
+        run: |
+          npm run wallet-start:no-watch &
+          echo '- - - - - Wallet is started but it takes up to 30 seconds to be up - - - - -'
 
-      # - name: install test npm modules
-      #   run: npm i
+      - name: install test npm modules
+        run: npm i
 
-      # - name: blockchain health check
-      #   run: CI=true npm run blockchain-health-check
+      - name: blockchain health check
+        run: CI=true npm run blockchain-health-check
 
       # - name: balances api health check
       #   run: CI=true npm run balances-api-health-check
 
-      # - name: check that wallet has started
-      #   run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check previous command output ^" && exit 1)
+      - name: check that wallet has started
+        run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check previous command output ^" && exit 1)
 
-      # - name: clean previous test report
-      #   run: rm -rf ./test-report/
+      - name: clean previous test report
+        run: rm -rf ./test-report/
 
-      # - name: run tests
-      #   run: CI=true npm test
+      - name: run tests
+        run: CI=true npm test
 
-      # - name: upload artifacts
-      #   if: always()
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: test-report
-      #     path: |
-      #       e2e/test-report/
-      #       e2e/test-report-swap/
-      #     retention-days: 7
+      - name: upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-report
+          path: |
+            e2e/test-report/
+            e2e/test-report-swap/
+          retention-days: 7
