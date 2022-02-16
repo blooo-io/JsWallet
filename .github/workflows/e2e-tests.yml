@@ -20,8 +20,9 @@ jobs:
       - name: check dev domain presence in repo
         working-directory: ./
         # {{secrets.SECRET_DOMAIN}}
+        # QWERTY12345
         run: |
-          grep -Ri ${{secrets.TEST_TEXT}} ./ \
+          grep -Ri ${{secrets.TEST_TEXT}} . \
           --exclude-dir node_modules \
           --exclude-dir e2e/node_modules \
           --exclude-dir .git &&\
@@ -30,7 +31,6 @@ jobs:
           echo 'See filename above. File content is hidden due to security.' && \
           echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
           exit 13
-
 
       - name: get branch name
         run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
