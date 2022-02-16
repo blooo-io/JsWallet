@@ -56,7 +56,7 @@ jobs:
         working-directory: ../
         run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
 
-      - name: check secret domain presence in repo
+      - name: check dev domain presence in repo
         working-directory: ./
         run: |
           # grep -Ri {{secrets.SECRET_DOMAIN}} ./ \
