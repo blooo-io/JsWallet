@@ -22,84 +22,84 @@ jobs:
         run: chmod +x ./dev-domain-presence-check.sh && ./dev-domain-presence-check.sh
         # echo "{environment_variable_name}={value}" >> $GITHUB_ENV
 
-      - name: get branch name
-        run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
-        id: get-branch-name
+      # - name: get branch name
+      #   run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
+      #   id: get-branch-name
 
-      - name: checkout web3t, testnet branch
-        uses: actions/checkout@v2
-        with:
-          repository: velas/web3t
-          path: .compiled-ssr/web3t
-          ref: testnet
+      # - name: checkout web3t, testnet branch
+      #   uses: actions/checkout@v2
+      #   with:
+      #     repository: velas/web3t
+      #     path: .compiled-ssr/web3t
+      #     ref: testnet
 
-      - name: get PR data
-        id: pr-data
-        uses: velas/get-pull-request-data@master
+      # - name: get PR data
+      #   id: pr-data
+      #   uses: velas/get-pull-request-data@master
 
-      - name: try to checkout the same branch for web3t
-        if: contains(steps.pr-data.outputs.title, 'web3t')
-        uses: actions/checkout@v2
-        continue-on-error: true
-        with:
-          repository: velas/web3t
-          path: .compiled-ssr/web3t
-          ref: ${{ steps.get-branch-name.outputs.branch_name }}
+      # - name: try to checkout the same branch for web3t
+      #   if: contains(steps.pr-data.outputs.title, 'web3t')
+      #   uses: actions/checkout@v2
+      #   continue-on-error: true
+      #   with:
+      #     repository: velas/web3t
+      #     path: .compiled-ssr/web3t
+      #     ref: ${{ steps.get-branch-name.outputs.branch_name }}
 
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14.x'
+      # - uses: actions/setup-node@v2
+      #   with:
+      #     node-version: '14.x'
 
-      - name: install web3t modules
-        working-directory: .compiled-ssr/web3t
-        run: npm i
+      # - name: install web3t modules
+      #   working-directory: .compiled-ssr/web3t
+      #   run: npm i
 
-      - name: install lsxc
-        run: npm i lsxc -g --unsafe-perm
+      # - name: install lsxc
+      #   run: npm i lsxc -g --unsafe-perm
 
-      - name: copy web3 side by side to wallet
-        working-directory: ../
-        run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
+      # - name: copy web3 side by side to wallet
+      #   working-directory: ../
+      #   run: rm -rf JsWallet/.compiled-ssr/web3t/.git/objects/ && mkdir -p web3t/ && cp -pr JsWallet/.compiled-ssr/web3t/ ./
 
 
-      - name: delete wallet build cache
-        working-directory: ./
-        run: rm -rf ./.compiled
+      # - name: delete wallet build cache
+      #   working-directory: ./
+      #   run: rm -rf ./.compiled
 
-      - name: run wallet
-        working-directory: ./
-        run: |
-          npm run wallet-start:no-watch &
-          echo '- - - - - Wallet is started but it takes up to 30 seconds to be up - - - - -'
+      # - name: run wallet
+      #   working-directory: ./
+      #   run: |
+      #     npm run wallet-start:no-watch &
+      #     echo '- - - - - Wallet is started but it takes up to 30 seconds to be up - - - - -'
 
-      - name: install test npm modules
-        run: npm i
+      # - name: install test npm modules
+      #   run: npm i
 
-      - name: check token providers in default.conf
-        working-directory: ./
-        run: npm run test:check-token-providers-in-default-conf
+      # - name: check token providers in default.conf
+      #   working-directory: ./
+      #   run: npm run test:check-token-providers-in-default-conf
 
-      - name: blockchain health check
-        run: CI=true npm run blockchain-health-check
+      # - name: blockchain health check
+      #   run: CI=true npm run blockchain-health-check
 
-      # - name: balances api health check
-      #   run: CI=true npm run balances-api-health-check
+      # # - name: balances api health check
+      # #   run: CI=true npm run balances-api-health-check
 
-      - name: check that wallet has started
-        run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check previous command output ^" && exit 1)
+      # - name: check that wallet has started
+      #   run: curl 127.0.0.1:8080 || (echo "ERROR! Walet has not started! Please check previous command output ^" && exit 1)
 
-      - name: clean previous test report
-        run: rm -rf ./test-report/
+      # - name: clean previous test report
+      #   run: rm -rf ./test-report/
 
-      - name: run tests
-        run: CI=true npm test
+      # - name: run tests
+      #   run: CI=true npm test
 
-      - name: upload artifacts
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-report
-          path: |
-            e2e/test-report/
-            e2e/test-report-swap/
-          retention-days: 7
+      # - name: upload artifacts
+      #   if: always()
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: test-report
+      #     path: |
+      #       e2e/test-report/
+      #       e2e/test-report-swap/
+      #     retention-days: 7
