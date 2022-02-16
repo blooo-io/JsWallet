@@ -27,7 +27,7 @@ jobs:
           (grep -Ri ${{secrets.TEST_TEXT}} . \
           --exclude-dir node_modules \
           --exclude-dir e2e/node_modules \
-          --exclude-dir .git || exit 0) && \
+          --exclude-dir .git && exit 0) && \
           echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
           echo 'The development domain was found in repository code.' && \
           echo 'See filename above. File content is hidden due to security.' && \
