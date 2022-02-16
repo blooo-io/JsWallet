@@ -17,10 +17,6 @@ jobs:
       - name: checkout JsWallet
         uses: actions/checkout@v2
 
-      - name: check dev domain presence is repo
-        working-directory: ./tests
-        run: chmod +x ./dev-domain-presence-check.sh && ./dev-domain-presence-check.sh
-
       - name: get branch name
         run: echo ${{github.event.pull_request.head.ref}} && echo '::set-output name=branch_name::${{github.event.pull_request.head.ref}}'
         id: get-branch-name
