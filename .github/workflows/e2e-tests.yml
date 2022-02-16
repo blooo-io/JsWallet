@@ -63,7 +63,7 @@ jobs:
           grep -Ri askdfjihf829f32 . \
           --exclude-dir node_modules \
           --exclude-dir e2e/node_modules \
-          --exclude-dir .git && \
+          --exclude-dir .git \
           --exclude-dir .github && \
           echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
           echo 'The development domain was found in repository code.' && \
