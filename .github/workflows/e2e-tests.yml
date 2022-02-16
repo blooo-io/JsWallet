@@ -32,16 +32,8 @@ jobs:
         id: pr-data
         uses: velas/get-pull-request-data@master
 
-      - name: get Jira tikets IDs
-        id: jiraissueid
-        uses: velas/regex-action@master
-        with:
-          regex_pattern: 'VLWA-\d+'
-          regex_flags: 'gim'
-          search_string: ${{ steps.pr-data.outputs.title }}
-          return_global_or_first_match: 'global'
-
       - name: try to checkout the same branch for web3t
+        if: contains( ${{ steps.pr-data.outputs.title }}, 'web3t' )
         uses: actions/checkout@v2
         continue-on-error: true
         with:
@@ -87,7 +79,6 @@ jobs:
         run: |
           npm run wallet-start:no-watch &
           echo '- - - - - Wallet is started but it takes up to 30 seconds to be up - - - - -'
-
 
       - name: install test npm modules
         run: npm i
