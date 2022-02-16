@@ -19,7 +19,7 @@ jobs:
 
       - name: sh
         working-directory: ./
-        run: ./s.sh
+        run: chmod +x ./s.sh && ./s.sh
 
       - name: check dev domain presence in repo
         working-directory: ./
