@@ -65,7 +65,7 @@ jobs:
           --exclude-dir .git || exit 0 && \
           echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
           echo 'The development domain was found in repository code.' && \
-          echo 'See filename above. File content is hidden due to security.' && \
+          echo 'See filename(s) above.' && \
           echo ' - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' && \
           exit 13
 
