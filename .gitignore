@@ -6,3 +6,4 @@ langs/config.json
 .vscode
 .expo/settings.json
 .idea
+node_modules/
